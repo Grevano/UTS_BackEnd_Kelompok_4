@@ -1,0 +1,29 @@
+Disini, kita buat folder untuk masing-masing endpoint API / komponen
+contoh seperti di template pak Janson, 
+"API/authentication", "API/books", "API/users", kita buat folder "authentication", "books", "users".
+
+untuk setiap komponen, kita buat:
+1. {nama-komponen}-route.js
+2. {nama-komponen}-controller.js
+3. {nama-komponen}-service.js
+4. {nama-komponen}-repository.js
+
+masing-masing module:
+1. {nama-komponen}-route.js
+    - menggunakan node module 'express'
+    - mendefinisikan route-route untuk suatu endpoint {nama-komponen} misal: users memiliki users/bio, users/info
+    - setiap route mengikuti aturan RESTful API (Get,Post,Put,Delete)
+    - import {nama-komponen}-controller.js
+
+2. {nama-komponen}-controller.js
+    - import {nama-komponen}-service.js, errorTypes, errorResponder (note: core/errors.js harus dibuat dlu)
+    - handle HTTP request dan error handling, jika ada salah dengan query, disini dimana di-handle
+    - dia hanya menerima HTTP request, cek jika ada input error, panggil fungsi dari Service.js, dan keluarkan hasil/error
+
+3. {nama-komponen}-service.js
+    - import {nama-komponen}-repository.js
+    - handle business logic, memanggil langsung repository
+
+4. {nama-komponen}-repository.js
+    - import model yang berkaitan dengan komponen dari '/models'
+    - disini kita membuat fungsi yang memanggil fungsi mongoDB 

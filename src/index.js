@@ -1,0 +1,1 @@
+//index.js utama dimana program akan dimulai

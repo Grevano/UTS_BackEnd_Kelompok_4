@@ -1,0 +1,1 @@
+//menggunakan bcrypt untuk menghash password dan keperluan authentication lainnya

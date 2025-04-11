@@ -1,0 +1,19 @@
+{
+  "name": "uts_backend_kelompok_4",
+  "version": "1.0.0",
+  "description": "UTS backend programming kelompok 4",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grevano/UTS_BackEnd_Kelompok_4.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Grevano/UTS_BackEnd_Kelompok_4/issues"
+  },
+  "homepage": "https://github.com/Grevano/UTS_BackEnd_Kelompok_4#readme"
+}

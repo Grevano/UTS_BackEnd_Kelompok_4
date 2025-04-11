@@ -1,0 +1,9 @@
+Bagian ini berisi:
+A. schema-schema untuk setiap objek yang ingin disimpan di database
+B. index.js
+    import: mongoose, core/logger.js, core/config.js (setahuku)
+    fungsi:
+    1. connect to mongoDB
+    2. initialize schema dan export schema
+    3. menggunakan logger.js untuk debugging database
+    4. menggunakan config.js untuk mengambil info .env untuk connect ke database 
