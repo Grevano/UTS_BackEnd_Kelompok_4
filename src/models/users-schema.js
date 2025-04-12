@@ -1,7 +1,7 @@
-module.exports = (db) =>
-  db.model(
+module.exports = (mongoose) =>
+  mongoose.model(
     'Users',
-    db.Schema({
+    new mongoose.Schema({
       email: String,
       password: String,
       fullName: String,
