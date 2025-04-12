@@ -4,6 +4,11 @@ async function getUsers(offset, limit) {
   return Users.find().skip(offset).limit(limit);
 }
 
+async function getAdminUsers(offset, limit) {
+  return Users.find({ role: 'admin' }).skip(offset).limit(limit);
+}
+
+
 async function getUser(id) {
   return Users.findById(id);
 }
@@ -12,8 +17,8 @@ async function getUserByEmail(email) {
   return Users.findOne({ email });
 }
 
-async function createUser(email, password, fullName) {
-  return Users.create({ email, password, fullName });
+async function createUser(email, password, fullName, role) {
+  return Users.create({ email, password, fullName, role });
 }
 
 async function updateUser(id, email, fullName) {
@@ -30,6 +35,7 @@ async function deleteUser(id) {
 
 module.exports = {
   getUsers,
+  getAdminUsers,
   getUser,
   getUserByEmail,
   createUser,

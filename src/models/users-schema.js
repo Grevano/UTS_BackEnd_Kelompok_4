@@ -5,5 +5,6 @@ module.exports = (mongoose) =>
       email: String,
       password: String,
       fullName: String,
+      role: String,
     })
   );

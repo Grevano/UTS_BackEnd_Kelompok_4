@@ -4,6 +4,10 @@ async function getUsers(offset, limit) {
   return usersRepository.getUsers(offset, limit);
 }
 
+async function getAdminUsers(offset, limit) {
+  return usersRepository.getAdminUsers(offset, limit);
+}
+
 async function getUser(id) {
   return usersRepository.getUser(id);
 }
@@ -13,8 +17,8 @@ async function emailExists(email) {
   return !!user; // Return true if user exists, false otherwise
 }
 
-async function createUser(email, password, fullName) {
-  return usersRepository.createUser(email, password, fullName);
+async function createUser(email, password, fullName, role) {
+  return usersRepository.createUser(email, password, fullName, role);
 }
 
 async function updateUser(id, email, fullName) {
@@ -27,6 +31,7 @@ async function deleteUser(id) {
 
 module.exports = {
   getUsers,
+  getAdminUsers,
   getUser,
   emailExists,
   createUser,

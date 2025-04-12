@@ -1,6 +1,8 @@
 const userRepository = require('../users/users-repository');
 const { passwordMatched } = require('../../../utils/password');
 const { errorResponder, errorTypes } = require('../../../core/errors');
+const { generateAccessToken } = require('../../../utils/jwt');
+
 
 async function login(email, password) {
   const user = await userRepository.getUserByEmail(email);
@@ -18,7 +20,20 @@ async function login(email, password) {
     throw errorResponder(errorTypes.INVALID_PASSWORD, 'Incorrect Password');
   }
 
-  return { id: user._id, email: user.email, fullName: user.fullName };
+  const payload = {
+    id: user._id,
+    email: user.email,
+    fullName: user.fullName,
+    role: user.role
+  };
+
+  const token = generateAccessToken(payload);
+
+  return {
+    message: `${user.fullName} successfully logged in, accessToken: ${token}`,
+    token,
+    user: payload, 
+  };
 }
 
 module.exports = {

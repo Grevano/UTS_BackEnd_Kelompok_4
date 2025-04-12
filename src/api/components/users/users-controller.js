@@ -14,6 +14,18 @@ async function getUsers(request, response, next) {
   }
 }
 
+async function getAdminUsers(request, response, next) {
+  try {
+    const offset = request.query.offset || 0;
+    const limit = request.query.limit || 20;
+    const users = await usersService.getAdminUsers(offset, limit);
+
+    return response.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getUser(request, response, next) {
   try {
     const user = await usersService.getUser(request.params.id);
@@ -28,6 +40,9 @@ async function getUser(request, response, next) {
   }
 }
 
+
+
+const allowedRoles = ['admin', 'teacher', 'student']
 async function createUser(request, response, next) {
   try {
     const {
@@ -35,6 +50,7 @@ async function createUser(request, response, next) {
       password,
       full_name: fullName,
       confirm_password: confirmPassword,
+      role: role,
     } = request.body;
 
     // Email is required and cannot be empty
@@ -50,6 +66,12 @@ async function createUser(request, response, next) {
       );
     }
 
+    if (!allowedRoles.includes(role)){
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
+        'Invalid or Empty role'
+      );
+    }
     // Email must be unique
     if (await usersService.emailExists(email)) {
       throw errorResponder(
@@ -81,7 +103,8 @@ async function createUser(request, response, next) {
     const success = await usersService.createUser(
       email,
       hashedPassword,
-      fullName
+      fullName,
+      role
     );
 
     if (!success) {
@@ -195,6 +218,7 @@ async function deleteUser(request, response, next) {
 
 module.exports = {
   getUsers,
+  getAdminUsers,
   getUser,
   createUser,
   updateUser,
