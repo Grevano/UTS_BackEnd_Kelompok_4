@@ -8,3 +8,4 @@ module.exports = (mongoose) =>
       role: String,
     })
   );
+
