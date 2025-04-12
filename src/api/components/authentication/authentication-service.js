@@ -1,7 +1,7 @@
 const userRepository = require('../users/users-repository');
 const { passwordMatched } = require('../../../utils/password');
 const { errorResponder, errorTypes } = require('../../../core/errors');
-const { generateToken } = require('../../../utils/jwt');
+const { generateAccessToken } = require('../../../utils/jwt');
 
 
 async function login(email, password) {
@@ -24,12 +24,13 @@ async function login(email, password) {
     id: user._id,
     email: user.email,
     fullName: user.fullName,
+    role: user.role
   };
 
-  const token = generateToken(payload);
+  const token = generateAccessToken(payload);
 
   return {
-    message: `${fullName} successfully logged in, accessToken: ${token}`,
+    message: `${user.fullName} successfully logged in, accessToken: ${token}`,
     token,
     user: payload, 
   };

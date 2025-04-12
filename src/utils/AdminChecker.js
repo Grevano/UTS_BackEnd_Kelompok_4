@@ -13,5 +13,5 @@ function isAdmin(req, res, next) {
     next(); // User is admin, so continue to the next middleware/route handler
   }
   
-  module.exports = isAdmin;
+  module.exports = { isAdmin };
   

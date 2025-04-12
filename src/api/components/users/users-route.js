@@ -12,10 +12,10 @@ module.exports = (app) => {
   route.get('/', authenticateToken, isAdmin, usersController.getUsers);
 
   //Get All admin users
-  route.get('/admin', authenticateToken, isAdmin, usersController.getUsers)
+  route.get('/admin', authenticateToken, isAdmin, usersController.getAdminUsers)
 
   // Create a new user
-  route.post('/', authenticateToken, isAdmin, usersController.createUser);
+  route.post('/',  authenticateToken, isAdmin, usersController.createUser);
 
   // Get user detail
   // route.get('/:id', usersController.getUser);

@@ -3,11 +3,11 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
 
 async function login(request, response, next) {
   try {
-    const { email, password } = request.body;
+    const { email, password} = request.body;
     if (!email || !password) {
       throw errorResponder(
         errorTypes.VALIDATION_ERROR,
-        'Please provide both a username and password'
+        'Please provide a username, a password'
       );
     }
     const user = await authservice.login(email, password);
