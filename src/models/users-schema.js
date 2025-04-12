@@ -7,3 +7,4 @@ module.exports = (mongoose) =>
       fullName: String,
     })
   );
+
