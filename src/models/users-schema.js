@@ -5,5 +5,6 @@ module.exports = (db) =>
       email: String,
       password: String,
       fullName: String,
+      role: String,
     })
   );

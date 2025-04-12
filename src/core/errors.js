@@ -101,6 +101,11 @@ const errorTypes = {
       status: 401,
       code: 'BAD_REFRESH_TOKEN_ERROR',
     },
+    NO_TOKEN_INPUT: {
+      description: 'Access token required',
+      status: 401,
+      code: 'ACCESS_TOKEN_REQURED_ERROR',
+    },
     WRONG_RESET_PASSWORD_TOKEN: {
       description:
         'Reset password token is not registered. Probably it already used',
