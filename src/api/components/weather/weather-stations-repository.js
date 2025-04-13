@@ -1,19 +1,20 @@
-const weatherData = require('../../../models/weather-schema.js')
+const mongoose = require('mongoose');
+const weatherDataModel = require('../../../models/weather-schema.js')(mongoose);
 
 const createWeatherStationInDB = async (data) => {
-  return await weatherData.create(data);
+  return await weatherDataModel.create(data);
 };
 
 const findWeatherStationByDeviceName = async (deviceName) => {
-  return await weatherData.find({ deviceName });
+  return await weatherDataModel.find({ deviceName });
 };
 
 const insertReadingsForStation = async (data) => {
-  return await weatherData.create(data);
+  return await weatherDataModel.create(data);
 };
 
 const findMaxPrecipitationLastFiveMonths = async (deviceName, fiveMonthsAgo) => {
-  return await weatherData.aggregate([
+  return await weatherDataModel.aggregate([
     //memastikan deviceName sama, dan waktu selalu lebih besar daripada fiveMonthsAgo
       {$match: {deviceName, time: {$gte: fiveMonthsAgo}}},
       {

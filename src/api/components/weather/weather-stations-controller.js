@@ -1,8 +1,10 @@
 const weatherStationService = require('./weather-stations-service.js');
-
+const { errorResponder, errorTypes } = require('../../../core/errors');
 /**Note: Ingat! tambahkan weatherStationService.
  * di depan fungsi yang dipanggil dari weather-station-service.js
  */
+
+//Tolong gantiin frederick gantheng
 const addWeatherStation = async (req, res) => {
   if (req.user.role !== "student") {
     try {
