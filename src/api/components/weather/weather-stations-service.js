@@ -1,6 +1,6 @@
 const weatherStationRepository = require ('./weather-stations-repository.js');
 /**Note: Ingat! tambahkan 'weatherStationRepository.'
- * di depan fungsi yang dipanggil dari weather-station-service.js
+ * di depan fungsi yang dipanggil dari weather-station-repository.js
  */
 const createWeatherStation = async (data) => {
   await weatherStationRepository.createWeatherStationInDB(data);

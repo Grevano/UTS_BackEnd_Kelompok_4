@@ -3,6 +3,9 @@ const weatherStationsController = require('./weather-stations-controller.js')
 const { authenticateToken} = require('../../../utils/AuthenticateToken')
 const router = express.Router();
 
+/**Note: Ingat! tambahkan 'weatherStationController.'
+ * di depan fungsi yang dipanggil dari weather-station-controller.js
+ */
 module.exports = (app) => {
   app.use('/weather', router)
   //Add a new weather station
