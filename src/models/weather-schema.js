@@ -10,12 +10,12 @@ module.exports = (mongoose) =>
         
         atmosphericPressure: {
             type: String,
-            doubel: true
+            double: true
         },
 
         latitude: {
             type: String,
-            doubel: true
+            double: true
         },
 
         longitude: {

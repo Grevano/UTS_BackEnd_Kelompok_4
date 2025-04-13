@@ -21,7 +21,7 @@ import {
   };
   
   export const addSensorReadingsForStation = async (req, res) => {
-    if (req.user?.role !== "student") {
+    if (req.user.role !== "student") {
       try {
         const message = await insertSensorReadings(req.params.deviceName, req.body);
         res.status(200).json({ message });
