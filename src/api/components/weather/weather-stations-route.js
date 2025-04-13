@@ -1,16 +1,16 @@
-import express from "express";
-
-import {
-  addWeatherStation,
-  addSensorReadingsForStation,
-  getMaxPrecipitation
-} from "./weather-stations-controller.js";
+const express = require('express');
+const weatherStationsController = require('./weather-stations-controller.js')
 
 const router = express.Router();
 
-router.post("/", addWeatherStation);
-router.post("/:deviceName", addSensorReadingsForStation);
-router.get("/:deviceName/max-precipitation", getMaxPrecipitation);
+module.exports = (app) => {
+  app.use('/weather', router)
+  //Add a new weather station
+  router.post("/", weatherStationsController.addWeatherStation);
 
-const weatherStationsRoute = router;
-export default weatherStationsRoute;
+  //Add sensor readings to the weather station
+  router.post("/:deviceName", weatherStationsController.addSensorReadingsForStation);
+
+  //Get maximum precipitation in the last 5 months
+  router.get("/:deviceName/max-precipitation", weatherStationsController.getMaxPrecipitation);
+}
