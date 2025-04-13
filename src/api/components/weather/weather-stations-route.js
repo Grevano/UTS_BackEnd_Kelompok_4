@@ -1,14 +1,11 @@
-import express from "express";
+const express = require("express");
 
-import {
+const {
   addWeatherStation,
   addSensorReadingsForStation
-} from "../controllers/weather-stations-controller.js";
+} = require("./weather-stations-controller.js");
 
-const router = express.Router();
-
-router.post("/", addWeatherStation);
-router.post("/:deviceName", addSensorReadingsForStation);
-
-const weatherStationsRoute = router;
-export default weatherStationsRoute;
+module.exports = (app) => {
+  app.post('/weather-stations', addWeatherStation);
+  app.post('/weather-stations/:deviceName', addSensorReadingsForStation);  
+};

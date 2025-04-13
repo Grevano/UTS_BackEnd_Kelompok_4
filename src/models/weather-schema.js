@@ -1,59 +1,18 @@
-module.exports = (mongoose) =>
-    mongoose.model(
-      'Weather',
-      new mongoose.Schema({
-        deviceName: String,
-        precipitation: {
-            type: String,
-            double: true
-        },
-        
-        atmosphericPressure: {
-            type: String,
-            doubel: true
-        },
+const mongoose = require('mongoose');
 
-        latitude: {
-            type: String,
-            doubel: true
-        },
+const weatherSchema = new mongoose.Schema({
+  deviceName: String,
+  precipitation: Number,
+  atmosphericPressure: Number,
+  latitude: Number,
+  longitude: Number,
+  temperature: Number,
+  time: String,
+  humidity: Number,
+  maxWindSpeed: Number,
+  solarRadiation: Number,
+  vaporPressure: Number,
+  windDirection: Number
+});
 
-        longitude: {
-            type: String,
-            double: true
-        },
-
-        temperature: {
-            type: Number,
-            double: true
-        },
-
-        time: Date,
-
-        humidity: {
-            type: Number,
-            double: true
-        },
-
-        maxWindSpeed: {
-            type: Number,
-            double: true
-        },
-
-        solarRadiation: {
-            type: Number,
-            double: true
-        },
-
-        vaporPressure: {
-            type: Number,
-            double: true    
-        },
-
-        windDirection: {
-            type: Number,
-            double: true
-        }
-      })
-    );
-  
+module.exports = mongoose.model('WeatherData', weatherSchema);

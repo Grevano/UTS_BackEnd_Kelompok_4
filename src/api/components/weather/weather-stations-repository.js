@@ -1,13 +1,19 @@
-import weatherData from "../models/weatherDataModel.js";
+const weatherData = require("../../../models/weather-schema.js");
 
-export const createWeatherStationInDB = async (data) => {
+const createWeatherStationInDB = async (data) => {
   return await weatherData.create(data);
 };
 
-export const findWeatherStationByDeviceName = async (deviceName) => {
+const findWeatherStationByDeviceName = async (deviceName) => {
   return await weatherData.find({ deviceName });
 };
 
-export const insertReadingsForStation = async (data) => {
+const insertReadingsForStation = async (data) => {
   return await weatherData.create(data);
 };
+
+module.exports = {
+  createWeatherStationInDB,
+  findWeatherStationByDeviceName,
+  insertReadingsForStation
+}; 
