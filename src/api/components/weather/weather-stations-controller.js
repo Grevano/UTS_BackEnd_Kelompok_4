@@ -1,12 +1,9 @@
-import {
-    createWeatherStation,
-    insertSensorReadings
-  } from "../services/weather-stations-service.js";
+import * as weatherStationService from "./weather-stations-service.js" ;
   
   export const addWeatherStation = async (req, res) => {
     if (req.user.role !== "student") {
       try {
-        const message = await createWeatherStation(req.body);
+        const message = await weatherStationService.createWeatherStation(req.body);
         res.status(200).json({ message });
       } catch (error) {
         if (error.name === 'ValidationError') {
@@ -23,7 +20,7 @@ import {
   export const addSensorReadingsForStation = async (req, res) => {
     if (req.user.role !== "student") {
       try {
-        const message = await insertSensorReadings(req.params.deviceName, req.body);
+        const message = await weatherStationService.insertSensorReadings(req.params.deviceName, req.body);
         res.status(200).json({ message });
       } catch (error) {
         console.log(error.message);
@@ -34,3 +31,17 @@ import {
     }
   };
   
+  export const getMaxPrecipitation = async (req, res) => {
+    try {
+      const deviceName = req.params.deviceName;
+  
+      const result = await weatherStationService.getMaxPrecipitation(deviceName);
+  
+      res.status(200).json(result);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+  //Mau dibikin module.export aja?

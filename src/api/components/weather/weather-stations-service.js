@@ -1,8 +1,9 @@
 import {
     createWeatherStationInDB,
     findWeatherStationByDeviceName,
-    insertReadingsForStation
-  } from "../repositories/weather-stations-repository.js";
+    insertReadingsForStation,
+    findMaxPrecipitationLastFiveMonths
+  } from "./weather-stations-repository.js";
   
   export const createWeatherStation = async (data) => {
     await createWeatherStationInDB(data);
@@ -20,3 +21,18 @@ import {
     return `${data.length} ${deviceName} sensor readings added successfully`;
   };
   
+  export const getMaxPrecipitation = async (deviceName) => {
+    const fiveMonthsAgo = new Date();
+    fiveMonthsAgo.setMonth(fiveMonthsAgo.getMonth()-5);
+
+    const result = await findMaxPrecipitationLastFiveMonths(deviceName, fiveMonthsAgo);
+
+    if (result.length == 0){
+      throw new Error (`No data found for '${deviceName}' in the last 5 months`)
+    }
+
+    const {maxPrecipitation, time} = result[0];
+    return {deviceName, maxPrecipitation, time};
+  };
+
+  //Ini mau dibikin module export aja?
