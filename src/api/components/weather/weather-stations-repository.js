@@ -30,9 +30,33 @@ const findMaxPrecipitationLastFiveMonths = async (deviceName, fiveMonthsAgo) => 
   ]);
 };
 
+//Menarik bacaan sebuah weather station berdasarkan waktu yang dipilih
+const getReadingsByDateFromDB = async (deviceName, date) => {
+  return await weatherDataModel.aggregate([
+    { $match: { deviceName, time: { $eq: date } } }
+  ]);
+};
+
+//Untuk melakukan delete
+//Menarik id data bacaan cuaca oleh sebuah weather station dari jangkauan tanggal tertentu
+const getReadingIdsInRange = async (deviceName, startDate, endDate) => {
+  return await weatherDataModel.aggregate([
+    { $match: { deviceName: deviceName, time: { $gte: startDate, $lt: endDate } } },
+    { $project: { _id: 1 } }
+  ]);
+};
+
+//Melakukan penghapusan berdasarkan id data bacaan
+const deleteReadingsByIds = async (ids) => {
+  return await weatherDataModel.deleteMany({ _id: { $in: ids } });
+};
+
 module.exports = {
   createWeatherStationInDB,
   findWeatherStationByDeviceName,
   insertReadingsForStation,
-  findMaxPrecipitationLastFiveMonths
+  findMaxPrecipitationLastFiveMonths,
+  getReadingsByDateFromDB,
+  getReadingIdsInRange,
+  deleteReadingsByIds
 }
