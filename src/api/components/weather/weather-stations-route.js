@@ -16,4 +16,11 @@ module.exports = (app) => {
 
   //Get maximum precipitation in the last 5 months
   router.get("/:deviceName/max-precipitation", authenticateToken, weatherStationsController.getMaxPrecipitation);
+
+  
+  //Get weather reading from a specific date
+  router.get("/:deviceName/readings/:date", weatherStationsController.getSensorReadingsByDate);
+
+  //Delete weather readings from a range of time
+  router.delete("/:deviceName/readings", authenticateToken, weatherStationsController.deleteSensorReadingsInRange);
 }

@@ -32,9 +32,35 @@ const getMaxPrecipitation = async (deviceName) => {
   return {deviceName, maxPrecipitation, time};
 };
 
+const getReadingsByDateService = async (deviceName, rawDate) => {
+  const date = new Date(rawDate);
+  const result = await weatherStationRepository.getReadingsByDateFromDB(deviceName, date);
+  if (result.length === 0) {
+    throw new Error(`No data found for '${deviceName}' at ${date}`);
+  }
+  const { temperature, atmosphericPressure, solarRadiation, precipitation } = result[0];
+  return { temperature, atmosphericPressure, solarRadiation, precipitation };
+};
+
+const deleteSensorReadingsInRange = async (deviceName, rawStartDate, rawEndDate) => {
+  const startDate = new Date(rawStartDate);
+  const endDate = new Date(rawEndDate);
+
+  const readings = await weatherStationRepository.getReadingIdsInRange(deviceName, startDate, endDate);
+  if (readings.length === 0) {
+    return { deletedCount: 0, notFound: true };
+  }
+
+  const deleteResult = await weatherStationRepository.deleteReadingsByIds(readings.map(r => r._id));
+  return { deletedCount: deleteResult.deletedCount, notFound: false };
+};
+
+
 //Ini mau dibikin module export aja?
 module.exports = {
   createWeatherStation,
   insertSensorReadings,
-  getMaxPrecipitation
+  getMaxPrecipitation,
+  getReadingsByDateService,
+  deleteSensorReadingsInRange
 };

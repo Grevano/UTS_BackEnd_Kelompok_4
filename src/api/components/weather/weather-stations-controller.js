@@ -48,9 +48,49 @@ const getMaxPrecipitation = async (req, res) => {
   }
 };
 
+const getSensorReadingsByDate = async (req, res) => {
+  try {
+    const { deviceName, date } = req.params;
+    const result = await weatherStationService.getReadingsByDateService(deviceName, date);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteSensorReadingsInRange = async (req, res) => {
+  if (req.user.role !== "student") {
+    try {
+      const deviceName = req.params.deviceName;
+      const { startDate, endDate } = req.query;
+
+      const { deletedCount, notFound } = await weatherStationService.deleteSensorReadingsInRange(
+        deviceName,
+        startDate,
+        endDate
+      );
+
+      if (notFound) {
+        return res.status(404).json({ message: "No data found in the provided date range" });
+      }
+
+      return res.status(200).json({ message: `${deletedCount} ${deviceName} readings deleted` });
+    } catch (error) {
+      console.log(error.message);
+      return res.status(500).json({ message: error.message });
+    }
+  } else {
+    return res.status(401).json({ message: "You are not authorised to access this content" });
+  }
+};
+
 //Mau dibikin module.export aja?
 module.exports = {
-addWeatherStation,
-addSensorReadingsForStation,
-getMaxPrecipitation
+  addWeatherStation,
+  addSensorReadingsForStation,
+  getMaxPrecipitation,
+  getSensorReadingsByDate,
+  deleteSensorReadingsInRange
 }

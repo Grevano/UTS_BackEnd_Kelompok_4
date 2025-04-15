@@ -25,6 +25,10 @@ async function updateUser(id, email, fullName) {
   return usersRepository.updateUser(id, email, fullName);
 }
 
+async function updateRole(id, role) {
+  return usersRepository.updateRole(id, role);
+}
+
 async function deleteUser(id) {
   return usersRepository.deleteUser(id);
 }
@@ -37,4 +41,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  updateRole,
 };

@@ -25,6 +25,10 @@ async function updateUser(id, email, fullName) {
   return Users.updateOne({ _id: id }, { $set: { email, fullName } });
 }
 
+async function updateRole(id, role) {
+  return Users.updateOne({ _id: id }, { $set: { role } });
+}
+
 async function changePassword(id, password) {
   return Users.updateOne({ _id: id }, { $set: { password } });
 }
@@ -42,4 +46,5 @@ module.exports = {
   updateUser,
   changePassword,
   deleteUser,
+  updateRole
 };
