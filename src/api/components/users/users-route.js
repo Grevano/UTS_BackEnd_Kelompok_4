@@ -28,4 +28,7 @@ module.exports = (app) => {
 
   // Delete user
   // route.delete('/:id', usersController.deleteUser);
+
+  route.delete('/delete-students', authenticateToken, isAdmin, usersController.deleteStudentUsers);
+
 };

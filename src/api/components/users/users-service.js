@@ -29,6 +29,11 @@ async function deleteUser(id) {
   return usersRepository.deleteUser(id);
 }
 
+async function deleteAllStudentUsers() {
+  const deletedCount = await usersRepository.deleteAllStudents();
+  return { deletedCount };
+}
+
 module.exports = {
   getUsers,
   getAdminUsers,
@@ -37,4 +42,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  deleteAllStudentUsers,
 };

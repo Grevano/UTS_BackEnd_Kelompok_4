@@ -1,59 +1,45 @@
-module.exports = (mongoose) =>
-    mongoose.model(
-      'Weather',
+module.exports = (mongoose) => {
+    // Check if the model is already defined
+    if (mongoose.models.weatherData) {
+      return mongoose.models.weatherData;
+    }
+    
+    // If not, define and return the new model
+    return mongoose.model(
+      'weatherData',
       new mongoose.Schema({
         deviceName: String,
         precipitation: {
-            type: String,
-            double: true
+          type: Number
         },
-        
         atmosphericPressure: {
-            type: String,
-            doubel: true
+          type: Number
         },
-
         latitude: {
-            type: String,
-            doubel: true
+          type: Number
         },
-
         longitude: {
-            type: String,
-            double: true
+          type: Number
         },
-
         temperature: {
-            type: Number,
-            double: true
+          type: Number
         },
-
         time: Date,
-
         humidity: {
-            type: Number,
-            double: true
+          type: Number
         },
-
         maxWindSpeed: {
-            type: Number,
-            double: true
+          type: Number
         },
-
         solarRadiation: {
-            type: Number,
-            double: true
+          type: Number
         },
-
         vaporPressure: {
-            type: Number,
-            double: true    
+          type: Number
         },
-
         windDirection: {
-            type: Number,
-            double: true
+          type: Number
         }
       })
     );
-  
+  };

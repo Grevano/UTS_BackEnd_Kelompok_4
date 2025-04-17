@@ -216,6 +216,27 @@ async function deleteUser(request, response, next) {
   }
 }
 
+async function deleteStudentUsers(request, response, next) {
+  try {
+    const result = await usersService.deleteAllStudentUsers();
+
+
+    if (!success) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to create user'
+      );
+    }
+
+    return response.status(200).json({
+      message: `${result.deletedCount} student(s) deleted successfully.`,
+    });
+    
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getUsers,
   getAdminUsers,
@@ -224,4 +245,5 @@ module.exports = {
   updateUser,
   changePassword,
   deleteUser,
+  deleteStudentUsers,
 };

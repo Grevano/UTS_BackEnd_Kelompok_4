@@ -1,13 +1,70 @@
-import weatherData from "../models/weatherDataModel.js";
+const mongoose = require('mongoose');
+const weatherDataModel = require('../../../models/weather-schema.js')(mongoose);
+const Weather = require("../../../models/weather-schema");
 
-export const createWeatherStationInDB = async (data) => {
-  return await weatherData.create(data);
+/**Note: Ingat! tambahkan 'weatherDataModel.'
+ * di depan fungsi yang dipanggil dari ../../../models/weather-schema.js
+ */
+const createWeatherStationInDB = async (data) => {
+  return await weatherDataModel.create(data);
 };
 
-export const findWeatherStationByDeviceName = async (deviceName) => {
-  return await weatherData.find({ deviceName });
+const findWeatherStationByDeviceName = async (deviceName) => {
+  return await weatherDataModel.find({ deviceName });
 };
 
-export const insertReadingsForStation = async (data) => {
-  return await weatherData.create(data);
+const insertReadingsForStation = async (data) => {
+  return await weatherDataModel.create(data);
 };
+
+const findMaxPrecipitationLastFiveMonths = async (deviceName, fiveMonthsAgo) => {
+  return await weatherDataModel.aggregate([
+    //memastikan deviceName sama, dan waktu selalu lebih besar daripada fiveMonthsAgo
+      {$match: {deviceName, time: {$gte: fiveMonthsAgo}}},
+      {
+        $group: {
+          _id: '$deviceName',
+          maxPrecipitation: {$max: '$precipitation'},
+          time: {$last: '$time'},
+        },
+      },
+  ]);
+};
+
+//Menarik bacaan sebuah weather station berdasarkan waktu yang dipilih
+const getReadingsByDateFromDB = async (deviceName, date) => {
+  return await weatherDataModel.aggregate([
+    { $match: { deviceName, time: { $eq: date } } }
+  ]);
+};
+
+//Untuk melakukan delete
+//Menarik id data bacaan cuaca oleh sebuah weather station dari jangkauan tanggal tertentu
+const getReadingIdsInRange = async (deviceName, startDate, endDate) => {
+  return await weatherDataModel.aggregate([
+    { $match: { deviceName: deviceName, time: { $gte: startDate, $lt: endDate } } },
+    { $project: { _id: 1 } }
+  ]);
+};
+
+//Melakukan penghapusan berdasarkan id data bacaan
+const updatePrecipitationById = async (id, precipitation) => {
+  const result = await Weather.findByIdAndUpdate(
+    id,
+    { precipitation },
+    { new: true }
+  );
+
+  return result;
+};
+
+module.exports = {
+  createWeatherStationInDB,
+  findWeatherStationByDeviceName,
+  insertReadingsForStation,
+  findMaxPrecipitationLastFiveMonths,
+  getReadingsByDateFromDB,
+  getReadingIdsInRange,
+  deleteReadingsByIds,
+  updatePrecipitationById
+}

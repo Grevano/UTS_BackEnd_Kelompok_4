@@ -33,6 +33,11 @@ async function deleteUser(id) {
   return Users.deleteOne({ _id: id });
 }
 
+async function deleteAllStudents() {
+  const result = await Users.deleteMany({ role: 'student' });
+  return result.deletedCount;
+}
+
 module.exports = {
   getUsers,
   getAdminUsers,
@@ -42,4 +47,5 @@ module.exports = {
   updateUser,
   changePassword,
   deleteUser,
+  deleteAllStudents,
 };
