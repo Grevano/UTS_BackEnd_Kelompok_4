@@ -86,11 +86,24 @@ const deleteSensorReadingsInRange = async (req, res) => {
   }
 };
 
+async function getStations(request, response, next) {
+  try {
+    const offset = request.query.offset || 0;
+    const limit = request.query.limit || 20;
+    const users = await weatherStationService.getStations(offset, limit);
+
+    return response.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 //Mau dibikin module.export aja?
 module.exports = {
   addWeatherStation,
   addSensorReadingsForStation,
   getMaxPrecipitation,
   getSensorReadingsByDate,
-  deleteSensorReadingsInRange
+  deleteSensorReadingsInRange,
+  getStations
 }

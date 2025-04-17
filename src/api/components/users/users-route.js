@@ -17,15 +17,6 @@ module.exports = (app) => {
   // Create a new user
   route.post('/',  authenticateToken, isAdmin, usersController.createUser); 
 
-  // Get user detail
-  // route.get('/:id', usersController.getUser);
-
-  // Update user
-  // route.put('/:id', usersController.updateUser);
-
-  // Change password
-  // route.put('/:id/change-password', usersController.changePassword);
-
-  // Delete user
-  // route.delete('/:id', usersController.deleteUser);
+  // Delete user, for testing purposes
+  route.delete('/delete/:id', usersController.deleteUser);
 };

@@ -8,7 +8,6 @@ async function getAdminUsers(offset, limit) {
   return Users.find({ role: 'admin' }).skip(offset).limit(limit);
 }
 
-
 async function getUser(id) {
   return Users.findById(id);
 }
@@ -17,18 +16,16 @@ async function getUserByEmail(email) {
   return Users.findOne({ email });
 }
 
-async function createUser(email, password, fullName, role) {
-  return Users.create({ email, password, fullName, role });
+async function createUser(email, password, fullName, role, lastSession) {
+  return Users.create({ email, password, fullName, role, lastSession});
+  
 }
 
-async function updateUser(id, email, fullName) {
-  return Users.updateOne({ _id: id }, { $set: { email, fullName } });
+async function updateUserSession(id) {
+  return Users.updateOne({ _id: id }, { lastSession: Date.now() })
 }
 
-async function changePassword(id, password) {
-  return Users.updateOne({ _id: id }, { $set: { password } });
-}
-
+//for testing purposes
 async function deleteUser(id) {
   return Users.deleteOne({ _id: id });
 }
@@ -39,7 +36,6 @@ module.exports = {
   getUser,
   getUserByEmail,
   createUser,
-  updateUser,
-  changePassword,
+  updateUserSession,
   deleteUser,
 };
