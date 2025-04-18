@@ -146,6 +146,40 @@ async function getUsers(request, response, next) {
     return next(error);
   }
 }
+
+//function to update the role of the user and make sure that the role is not empty or invalid
+// and the user exists, but make sure that only the admin can update the role of the user
+// and the user cannot update his own role
+//PUT https://localhost:5000/users/roles
+//body: { role: 'admin' }
+//params: { id: 'userId' }
+async function updateRole(request, response, next) {
+  try {
+    const { role } = request.body;
+    const userId = request.params.id;
+
+    // Check if the user exists
+    const user = await usersService.getUser(userId);
+    if (!user) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
+    }
+
+    // Check if the role is valid
+    if (!allowedRoles.includes(role)) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or Empty role');
+    }
+
+    // Update the user's role
+    const success = await usersService.updateRole(userId, role);
+    if (!success) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Failed to update role');
+    }
+    return response.status(200).json({ message: 'User role updated successfully' });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 //for testing purposes
 async function getUser(request, response, next) {
   try {
@@ -168,4 +202,5 @@ module.exports = {
   createUser,
   deleteUser,
   updateRole,
+  getUser,
 };
