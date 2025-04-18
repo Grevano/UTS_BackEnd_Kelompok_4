@@ -2,18 +2,6 @@ const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const { hashPassword } = require('../../../utils/password');
 
-async function getUsers(request, response, next) {
-  try {
-    const offset = request.query.offset || 0;
-    const limit = request.query.limit || 20;
-    const users = await usersService.getUsers(offset, limit);
-
-    return response.status(200).json(users);
-  } catch (error) {
-    return next(error);
-  }
-}
-
 async function getAdminUsers(request, response, next) {
   try {
     const offset = request.query.offset || 0;
@@ -25,22 +13,6 @@ async function getAdminUsers(request, response, next) {
     return next(error);
   }
 }
-
-async function getUser(request, response, next) {
-  try {
-    const user = await usersService.getUser(request.params.id);
-
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-
-    return response.status(200).json(user);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-
 
 const allowedRoles = ['admin', 'teacher', 'student']
 async function createUser(request, response, next) {
@@ -154,10 +126,23 @@ async function deleteUser(request, response, next) {
   }
 }
 
+//for testing purposes
+async function getUsers(request, response, next) {
+  try {
+    const offset = request.query.offset || 0;
+    const limit = request.query.limit || 20;
+    const users = await usersService.getUsers(offset, limit);
+
+    return response.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 module.exports = {
   getUsers,
   getAdminUsers,
-  getUser,
   createUser,
   deleteUser,
 };

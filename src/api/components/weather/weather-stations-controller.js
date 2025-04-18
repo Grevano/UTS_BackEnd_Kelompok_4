@@ -88,6 +88,7 @@ const deleteSensorReadingsInRange = async (req, res) => {
   }
 };
 
+//for testing purposes
 async function getStations(request, response, next) {
   try {
     const offset = request.query.offset || 0;

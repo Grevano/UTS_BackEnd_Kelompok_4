@@ -55,6 +55,7 @@ const deleteSensorReadingsInRange = async (deviceName, rawStartDate, rawEndDate)
   return { deletedCount: deleteResult.deletedCount, notFound: false };
 };
 
+//for testing purposes
 async function getStations(offset, limit) {
   return weatherStationRepository.getStations(offset, limit);
 }
