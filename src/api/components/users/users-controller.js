@@ -34,13 +34,10 @@ async function createUser(request, response, next) {
     if (!email) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
     }
-
-    // Full name is required and cannot be empty
-    if (!fullName) {
-      throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
-        'Full name is required'
-      );
+    
+    //if request body is empty
+    if (!email && !fullName && !password && !confirmPassword && !role) {
+      throw errorResponder(errorTypes.EMPTY_BODY, 'Request Body empty, please fill with Email, Full Name, Password, ConfirmPassword, and Role (or LastSession)');
     }
     
     // Role can only be either admin, teacher, or student
@@ -58,6 +55,11 @@ async function createUser(request, response, next) {
         'Email already exists'
       );
     }
+    if (!password) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 
+        'Password is required'
+      );
+    }
 
     // The password is at least 8 characters long
     if (!password) {
@@ -70,7 +72,7 @@ async function createUser(request, response, next) {
     // The password is at least 8 characters long
     if (password.length < 8) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
+        errorTypes.VALIDATION,
         'Password must be at least 8 characters long'
       );
     }
@@ -78,8 +80,15 @@ async function createUser(request, response, next) {
     // The password and confirm password must match
     if (password !== confirmPassword) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
+        errorTypes.VALIDATION,
         'Password and confirm password do not match'
+      );
+    }
+//Role can onlly be either admin, teacher, or student
+    if (!allowedRoles.includes(role)){
+      throw errorResponder(
+        errorTypes.VALIDATION,
+        'Invalid Role'
       );
     }
 
@@ -101,25 +110,24 @@ async function createUser(request, response, next) {
         'Failed to create user'
       );
     }
-
     return response.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     return next(error);
   }
 }
 
+
 //for testing purposes
 async function deleteUser(request, response, next) {
   try {
     const success = await usersService.deleteUser(request.params.id);
-
     if (!success) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
+
         'Failed to delete user'
       );
     }
-
     return response.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     return next(error);
@@ -138,6 +146,20 @@ async function getUsers(request, response, next) {
     return next(error);
   }
 }
+//for testing purposes
+async function getUser(request, response, next) {
+  try {
+    const user = await usersService.getUser(request.params.id);
+
+    if (!user) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
+    }
+
+    return response.status(200).json(user);
+  } catch (error) {
+    return next(error);
+  }
+}
 
 
 module.exports = {
@@ -145,4 +167,5 @@ module.exports = {
   getAdminUsers,
   createUser,
   deleteUser,
+  updateRole,
 };

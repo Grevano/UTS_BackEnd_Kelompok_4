@@ -13,7 +13,6 @@ async function createUser(email, password, fullName, role, lastSession) {
   return usersRepository.createUser(email, password, fullName, role, lastSession);
 }
 
-
 //for testing purposes
 async function deleteUser(id) {
   return usersRepository.deleteUser(id);
@@ -34,4 +33,5 @@ module.exports = {
   emailExists,
   createUser,
   deleteUser,
+  updateRole,
 };

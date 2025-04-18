@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const weatherDataModel = require('../../../models/weather-schema.js')(mongoose);
-
 /**Note: Ingat! tambahkan 'weatherDataModel.'
  * di depan fungsi yang dipanggil dari ../../../models/weather-schema.js
  */

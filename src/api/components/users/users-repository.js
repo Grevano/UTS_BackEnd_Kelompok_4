@@ -35,9 +35,9 @@ async function getUser(id) {
 module.exports = {
   getUsers,
   getAdminUsers,
-  getUser,
   getUserByEmail,
   createUser,
   updateUserSession,
   deleteUser,
+  updateRole
 };
