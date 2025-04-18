@@ -28,10 +28,11 @@ async function login(email, password) {
   };
 
   const token = generateAccessToken(payload);
+  await userRepository.updateUserSession(payload.id)
 
   return {
-    message: `${user.fullName} successfully logged in, accessToken: ${token}`,
-    token,
+    message: `${user.fullName} successfully logged in, please enter the token into Auth -> bearer`,
+    token: token,
     user: payload, 
   };
 }
