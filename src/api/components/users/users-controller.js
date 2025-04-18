@@ -26,17 +26,26 @@ async function createUser(request, response, next) {
     } = request.body;
 
     let lastSession = (request.body.lastSession && !isNaN(new Date(request.body.lastSession)))
-       ? new Date(request.body.lastSession)
-       : new Date();
+      ? new Date(request.body.lastSession)
+      : new Date();
+    
 
+    // Email is required and cannot be empty
+    if (!email) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
+    }
     
     //if request body is empty
     if (!email && !fullName && !password && !confirmPassword && !role) {
       throw errorResponder(errorTypes.EMPTY_BODY, 'Request Body empty, please fill with Email, Full Name, Password, ConfirmPassword, and Role (or LastSession)');
     }
-    /// request body must be complete
-    if (!email || !fullName || !password || !confirmPassword || !role) {
-      throw errorResponder(errorTypes.VALIDATION, 'Email, Full Name, Password, ConfirmPassword, and Role are required');
+    
+    // Role can only be either admin, teacher, or student
+    if (!allowedRoles.includes(role) || !role){
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
+        'Invalid or Empty role'
+      );
     }
 
     // Email must be unique
@@ -48,6 +57,14 @@ async function createUser(request, response, next) {
     }
     if (!password) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 
+        'Password is required'
+      );
+    }
+
+    // The password is at least 8 characters long
+    if (!password) {
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
         'Password is required'
       );
     }
@@ -98,56 +115,33 @@ async function createUser(request, response, next) {
     return next(error);
   }
 }
-//function to update the role of the user and make sure that the role is not empty or invalid
-// and the user exists, but make sure that only the admin can update the role of the user
-// and the user cannot update his own role
-//PUT https://localhost:5000/users/roles
-//body: { role: 'admin' }
-//params: { id: 'userId' }
-async function updateRole(request, response, next) {
+
+
+//for testing purposes
+async function deleteUser(request, response, next) {
   try {
-    const { role } = request.body;
-    const userId = request.params.id;
-
-    // Check if the user exists
-    const user = await usersService.getUser(userId);
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-
-    // Check if the role is valid
-    if (!allowedRoles.includes(role)) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or Empty role');
-    }
-
-    // Update the user's role
-    const success = await usersService.updateRole(userId, role);
-
+    const success = await usersService.deleteUser(request.params.id);
     if (!success) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
-        'Failed to update user role'
+
+        'Failed to delete user'
       );
     }
-
-    return response.status(200).json({ message: 'User role updated successfully' });
+    return response.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     return next(error);
   }
 }
 
-async function deleteUser(request, response, next) {
+//for testing purposes
+async function getUsers(request, response, next) {
   try {
-    const success = await usersService.deleteUser(request.params.id);
+    const offset = request.query.offset || 0;
+    const limit = request.query.limit || 20;
+    const users = await usersService.getUsers(offset, limit);
 
-    if (!success) {
-      throw errorResponder(
-        errorTypes.UNPROCESSABLE_ENTITY,
-        'Failed to delete user'
-      );
-    }
-
-    return response.status(200).json({ message: 'User deleted successfully' });
+    return response.status(200).json(users);
   } catch (error) {
     return next(error);
   }
@@ -166,6 +160,7 @@ async function getUser(request, response, next) {
     return next(error);
   }
 }
+
 
 module.exports = {
   getUsers,

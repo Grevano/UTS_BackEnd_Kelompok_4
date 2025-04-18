@@ -54,13 +54,10 @@ const deleteSensorReadingsInRange = async (deviceName, rawStartDate, rawEndDate)
   const deleteResult = await weatherStationRepository.deleteReadingsByIds(readings.map(r => r._id));
   return { deletedCount: deleteResult.deletedCount, notFound: false };
 };
-//for testing purposes
-async function getStations(offset,limit){
-  return weatherStationRepository.getStations(offset,limit);
-}
 
-async function getMaxTemperatureInRange(startDate, endDate) {
-  return await weatherStationRepository.findMaxTemperatureInRange(startDate, endDate);
+//for testing purposes
+async function getStations(offset, limit) {
+  return weatherStationRepository.getStations(offset, limit);
 }
 
 //Ini mau dibikin module export aja?
@@ -70,6 +67,5 @@ module.exports = {
   getMaxPrecipitation,
   getReadingsByDateService,
   deleteSensorReadingsInRange,
-  getStations,
-  getMaxTemperatureInRange,
+  getStations
 };

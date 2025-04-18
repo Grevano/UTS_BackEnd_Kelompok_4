@@ -8,11 +8,11 @@ const addWeatherStation = async (req, res) => {
     try {
       const message = await weatherStationService.createWeatherStation(req.body);
       res.status(200).json({ message });
-    } catch (error) {
+    } catch (error){
       if (error.name === 'ValidationError') {
-        //Mmebuat array berisi berbagai error
+        // Membuat array berisi berbagai error
         const errors = Object.values(error.errors).map(err => err.message);
-        //Menggabungkan error tsb dengan koma
+        // Menggabungkan error tersebut dengan koma
         return res.status(400).json({ error: errors.join(', ') });
       }
       console.log(error.message);
@@ -87,7 +87,8 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
-  //for testing purposes
+
+//for testing purposes
 async function getStations(request, response, next) {
   try {
     const offset = request.query.offset || 0;
@@ -99,31 +100,6 @@ async function getStations(request, response, next) {
     return next(error);
   }
 }
-//function create API to: GET | /weather-stations/max-temperature
-//get max temperature in data range for all data
-//API Results example: { "deviceName= Station-XYZ",
-//"maxTemperature =50.64"}
-const getMaxTemperature = async (req, res) => {
-    try {
-      const { startDate, endDate } = req.query;
-  
-      if (!startDate || !endDate) {
-        return res.status(400).json({ message: "startDate and endDate are required query parameters." });
-      }
-  
-      const result = await weatherStationService.getMaxTemperatureInRange(startDate, endDate);
-  
-      if (result.length === 0) {
-        return res.status(404).json({ message: "No data found in the provided date range." });
-      }
-  
-      res.status(200).json(result[0]);
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ message: error.message });
-    }
-  };
-
 
 //Mau dibikin module.export aja?
 module.exports = {
@@ -132,6 +108,5 @@ module.exports = {
   getMaxPrecipitation,
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
-  getStations,
-  getMaxTemperature,
+  getStations
 }

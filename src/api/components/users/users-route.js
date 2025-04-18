@@ -10,16 +10,15 @@ module.exports = (app) => {
 
   //Get All admin users
   route.get('/admin', authenticateToken, isAdmin, usersController.getAdminUsers)
-
+  
   // Create a new user
   route.post('/',  authenticateToken, isAdmin, usersController.createUser); 
-
-  //Update user role
-  route.put('/:id/role', authenticateToken, isAdmin, usersController.updateRole);
-
+  
+  //for testing purposes
   // Delete user
   route.delete('/delete/:id', usersController.deleteUser);
-
-  //Get list of users
+  
+  // Get list of users
   route.get('/', authenticateToken, isAdmin, usersController.getUsers);
 };
+
