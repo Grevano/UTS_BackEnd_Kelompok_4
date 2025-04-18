@@ -24,11 +24,12 @@ module.exports = (app) => {
   // route.put('/:id', usersController.updateUser);
 
   //Update user role
-  route.put('/:id/role', usersController.updateRole);
+  route.put('/:id/role', authenticateToken, isAdmin, usersController.updateRole);
+  //route.put('/:id/role', usersController.updateRole);
 
   // Change password
   // route.put('/:id/change-password', usersController.changePassword);
 
   // Delete user
-  // route.delete('/:id', usersController.deleteUser);
+  route.delete('/delete/:id', usersController.deleteUser);
 };

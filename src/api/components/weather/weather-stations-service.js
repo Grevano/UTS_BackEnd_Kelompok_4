@@ -58,6 +58,13 @@ const deleteSensorReadingsInRange = async (deviceName, rawStartDate, rawEndDate)
 async function getStations(offset,limit){
   return weatherStationRepository.getStations(offset,limit);
 }
+
+const weatherRepository = require('./weather-stations-repository');
+
+async function getMaxTemperature() {
+  return await weatherRepository.findMaxTemperature();
+}
+
 //Ini mau dibikin module export aja?
 module.exports = {
   createWeatherStation,
@@ -65,5 +72,6 @@ module.exports = {
   getMaxPrecipitation,
   getReadingsByDateService,
   deleteSensorReadingsInRange,
-  getStations
+  getStations,
+  getMaxTemperature
 };

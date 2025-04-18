@@ -1,5 +1,5 @@
 const { Users } = require('../../../models');
-const { emailExists } = require('./users-service');
+
 
 async function getUsers(offset, limit) {
   return Users.find().skip(offset).limit(limit);
@@ -8,7 +8,6 @@ async function getUsers(offset, limit) {
 async function getAdminUsers(offset, limit) {
   return Users.find({ role: 'admin' }).skip(offset).limit(limit);
 }
-
 
 async function getUser(id) {
   return Users.findById(id);

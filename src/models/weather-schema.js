@@ -8,38 +8,52 @@ module.exports = (mongoose) => {
     return mongoose.model(
       'weatherData',
       new mongoose.Schema({
-        deviceName: String,
+        deviceName: {
+          type: String,
+          required: [true, 'deviceName is required']
+        },
+
         precipitation: {
-          type: Number
+          type: Number,
+          required: [true, 'Precipitation is required']
         },
         atmosphericPressure: {
-          type: Number
+          type: Number,
+          required: [true, 'Atmospheric pressure is required']
         },
         latitude: {
-          type: Number
+          type: Number,
+          required: [true, 'Latitude is required']
         },
         longitude: {
-          type: Number
+          type: Number,
+          required: [true, 'Longitude is required']
         },
         temperature: {
-          type: Number
+          type: Number,
+          required: [true, 'Temperature is required']
         },
         time: Date,
         humidity: {
-          type: Number
+          type: Number,
+          required: [true, 'Humidity is required']
         },
         maxWindSpeed: {
-          type: Number
+          type: Number,
+          required: [true, 'Max wind speed is required']
         },
         solarRadiation: {
-          type: Number
+          type: Number,
+          required: [true, 'Solar radiation is required']
         },
         vaporPressure: {
-          type: Number
+          type: Number,
+          required: [true, 'Vapor pressure is required']
         },
         windDirection: {
-          type: Number
+          type: Number,
+          required: [true, 'Wind direction is required']
         }
       })
     );
-  };
+  }

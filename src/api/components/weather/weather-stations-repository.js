@@ -54,6 +54,26 @@ const deleteReadingsByIds = async (ids) => {
 async function getStations(offset,limit) {
   return weatherDataModel.find().skip(offset).limit(limit);
 }
+const weatherRepository = require('./weather-stations-repository');
+
+const findMaxTemperature = async () => {
+  return await weatherDataModel.aggregate([
+    {
+      $group: {
+        _id: '$deviceName',
+        maxTemperature: { $max: '$temperature' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        deviceName: '$_id',
+        maxTemperature: 1
+      },
+    }
+  ]);
+};
+
 
 module.exports = {
   createWeatherStationInDB,
@@ -63,5 +83,6 @@ module.exports = {
   getReadingsByDateFromDB,
   getReadingIdsInRange,
   deleteReadingsByIds,
-  getStations
+  getStations,
+  findMaxTemperature
 }

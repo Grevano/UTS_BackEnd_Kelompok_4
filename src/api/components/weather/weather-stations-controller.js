@@ -3,7 +3,6 @@ const weatherStationService = require('./weather-stations-service.js');
  * di depan fungsi yang dipanggil dari weather-station-service.js
  */
 
-//Tolong gantiin frederick gantheng
 const addWeatherStation = async (req, res) => {
   if (req.user.role !== "student") {
     try {
@@ -11,7 +10,10 @@ const addWeatherStation = async (req, res) => {
       res.status(200).json({ message });
     } catch (error) {
       if (error.name === 'ValidationError') {
-        return res.status(400).json({ message: error.message });
+        //Mmebuat array berisi berbagai error
+        const errors = Object.values(error.errors).map(err => err.message);
+        //Menggabungkan error tsb dengan koma
+        return res.status(400).json({ error: errors.join(', ') });
       }
       console.log(error.message);
       res.status(500).json({ message: error.message });
@@ -97,6 +99,22 @@ const deleteSensorReadingsInRange = async (req, res) => {
   }
 }
 
+//function create API to: GET | /weather-stations/max-temperature
+//get max temperature in data range for all data
+//API Results example: { "deviceName= Station-XYZ",
+//"maxTemperature =50.64"}
+const getMaxTemperature = async (req, res) => {
+  try {
+    const results = await weatherStationService.getMaxTemperature();
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error in getMaxTemperature:', error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 //Mau dibikin module.export aja?
 module.exports = {
   addWeatherStation,
@@ -104,5 +122,6 @@ module.exports = {
   getMaxPrecipitation,
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
-  getStations
+  getStations,
+  getMaxTemperature
 }

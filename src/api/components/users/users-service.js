@@ -17,10 +17,13 @@ async function emailExists(email) {
   return !!user; // Return true if user exists, false otherwise
 }
 
-async function createUser(email, password, fullName, role) {
-  return usersRepository.createUser(email, password, fullName, role);
+async function createUser(email, password, fullName, role,lastSession) {
+  return usersRepository.createUser(email, password, fullName, role,lastSession);
 }
 
+//async function updateRole(id, role) {
+ // return usersRepository.updateRole(id, role);
+//}
 async function updateRole(id, role) {
   return usersRepository.updateRole(id, role);
 }
