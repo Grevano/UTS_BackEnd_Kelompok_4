@@ -87,7 +87,7 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
-  
+  //for testing purposes
 async function getStations(request, response, next) {
   try {
     const offset = request.query.offset || 0;

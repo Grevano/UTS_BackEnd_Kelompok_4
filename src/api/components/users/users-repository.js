@@ -1,16 +1,7 @@
 const { Users } = require('../../../models');
 
-
-async function getUsers(offset, limit) {
-  return Users.find().skip(offset).limit(limit);
-}
-
 async function getAdminUsers(offset, limit) {
   return Users.find({ role: 'admin' }).skip(offset).limit(limit);
-}
-
-async function getUser(id) {
-  return Users.findById(id);
 }
 
 async function getUserByEmail(email) {
@@ -32,10 +23,18 @@ async function deleteUser(id) {
   return Users.deleteOne({ _id: id });
 }
 
+async function getUsers(offset, limit) {
+  return Users.find().skip(offset).limit(limit);
+}
+
+//for testing purposes
+async function getUser(id) {
+  return Users.findById(id);
+}
+
 module.exports = {
   getUsers,
   getAdminUsers,
-  getUser,
   getUserByEmail,
   createUser,
   updateUserSession,

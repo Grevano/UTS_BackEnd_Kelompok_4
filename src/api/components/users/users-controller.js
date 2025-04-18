@@ -2,18 +2,6 @@ const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const { hashPassword } = require('../../../utils/password');
 
-async function getUsers(request, response, next) {
-  try {
-    const offset = request.query.offset || 0;
-    const limit = request.query.limit || 20;
-    const users = await usersService.getUsers(offset, limit);
-
-    return response.status(200).json(users);
-  } catch (error) {
-    return next(error);
-  }
-}
-
 async function getAdminUsers(request, response, next) {
   try {
     const offset = request.query.offset || 0;
@@ -25,22 +13,6 @@ async function getAdminUsers(request, response, next) {
     return next(error);
   }
 }
-
-async function getUser(request, response, next) {
-  try {
-    const user = await usersService.getUser(request.params.id);
-
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-
-    return response.status(200).json(user);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-
 
 const allowedRoles = ['admin', 'teacher', 'student']
 async function createUser(request, response, next) {
@@ -57,26 +29,16 @@ async function createUser(request, response, next) {
        ? new Date(request.body.lastSession)
        : new Date();
 
-    // Email is required and cannot be empty
-    if (!email) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
+    
+    //if request body is empty
+    if (!email && !fullName && !password && !confirmPassword && !role) {
+      throw errorResponder(errorTypes.EMPTY_BODY, 'Request Body empty, please fill with Email, Full Name, Password, ConfirmPassword, and Role (or LastSession)');
+    }
+    /// request body must be complete
+    if (!email || !fullName || !password || !confirmPassword || !role) {
+      throw errorResponder(errorTypes.VALIDATION, 'Email, Full Name, Password, ConfirmPassword, and Role are required');
     }
 
-    // Full name is required and cannot be empty
-    if (!fullName) {
-      throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
-        'Full name is required'
-      );
-    }
-
-    if (!allowedRoles.includes(role) || !role){
-      //Role can only be admin, teacher, or student
-      throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
-        'Invalid or Empty role'
-      );
-    }
     // Email must be unique
     if (await usersService.emailExists(email)) {
       throw errorResponder(
@@ -89,10 +51,11 @@ async function createUser(request, response, next) {
         'Password is required'
       );
     }
+
     // The password is at least 8 characters long
     if (password.length < 8) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
+        errorTypes.VALIDATION,
         'Password must be at least 8 characters long'
       );
     }
@@ -100,8 +63,15 @@ async function createUser(request, response, next) {
     // The password and confirm password must match
     if (password !== confirmPassword) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
+        errorTypes.VALIDATION,
         'Password and confirm password do not match'
+      );
+    }
+//Role can onlly be either admin, teacher, or student
+    if (!allowedRoles.includes(role)){
+      throw errorResponder(
+        errorTypes.VALIDATION,
+        'Invalid Role'
       );
     }
 
@@ -123,15 +93,11 @@ async function createUser(request, response, next) {
         'Failed to create user'
       );
     }
-
     return response.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     return next(error);
   }
 }
-
-
-
 //function to update the role of the user and make sure that the role is not empty or invalid
 // and the user exists, but make sure that only the admin can update the role of the user
 // and the user cannot update his own role
@@ -186,11 +152,24 @@ async function deleteUser(request, response, next) {
     return next(error);
   }
 }
+//for testing purposes
+async function getUser(request, response, next) {
+  try {
+    const user = await usersService.getUser(request.params.id);
+
+    if (!user) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
+    }
+
+    return response.status(200).json(user);
+  } catch (error) {
+    return next(error);
+  }
+}
 
 module.exports = {
   getUsers,
   getAdminUsers,
-  getUser,
   createUser,
   deleteUser,
   updateRole,
