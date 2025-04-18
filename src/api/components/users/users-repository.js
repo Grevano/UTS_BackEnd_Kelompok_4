@@ -1,4 +1,5 @@
 const { Users } = require('../../../models');
+const { emailExists } = require('./users-service');
 
 async function getUsers(offset, limit) {
   return Users.find().skip(offset).limit(limit);
@@ -17,22 +18,17 @@ async function getUserByEmail(email) {
   return Users.findOne({ email });
 }
 
-async function createUser(email, password, fullName, role) {
-  return Users.create({ email, password, fullName, role });
-}
-
-async function updateUser(id, email, fullName) {
-  return Users.updateOne({ _id: id }, { $set: { email, fullName } });
+async function createUser(email, password, fullName, role, lastSession) {
+  return Users.create({ email, password, fullName, role, lastSession });
 }
 
 async function updateRole(id, role) {
   return Users.updateOne({ _id: id }, { $set: { role } });
 }
 
-async function changePassword(id, password) {
-  return Users.updateOne({ _id: id }, { $set: { password } });
+async function updateUserSession(id) {
+  return Users.updateOne({ _id: id }, { $set: { lastSession: Date.now()}});
 }
-
 async function deleteUser(id) {
   return Users.deleteOne({ _id: id });
 }
@@ -43,8 +39,7 @@ module.exports = {
   getUser,
   getUserByEmail,
   createUser,
-  updateUser,
-  changePassword,
+  updateUserSession,
   deleteUser,
   updateRole
 };

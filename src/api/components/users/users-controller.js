@@ -53,6 +53,10 @@ async function createUser(request, response, next) {
       role: role,
     } = request.body;
 
+    let lastSession = (request.body.lastSession && !isNaN(new Date(request.body.lastSession)))
+       ? new Date(request.body.lastSession)
+       : new Date();
+
     // Email is required and cannot be empty
     if (!email) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
@@ -67,6 +71,7 @@ async function createUser(request, response, next) {
     }
 
     if (!allowedRoles.includes(role)){
+      //Role can only be admin, teacher, or student
       throw errorResponder(
         errorTypes.VALIDATION_ERROR,
         'Invalid or Empty role'
@@ -79,7 +84,11 @@ async function createUser(request, response, next) {
         'Email already exists'
       );
     }
-
+    if (!password) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 
+        'Password is required'
+      );
+    }
     // The password is at least 8 characters long
     if (password.length < 8) {
       throw errorResponder(
@@ -104,7 +113,8 @@ async function createUser(request, response, next) {
       email,
       hashedPassword,
       fullName,
-      role
+      role,
+      lastSession
     );
 
     if (!success) {
