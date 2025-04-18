@@ -51,6 +51,7 @@ const deleteReadingsByIds = async (ids) => {
   return await weatherDataModel.deleteMany({ _id: { $in: ids } });
 };
 
+//for testing purposes
 async function getStations(offset, limit) {
   return weatherDataModel.find().skip(offset).limit(limit);
 }
