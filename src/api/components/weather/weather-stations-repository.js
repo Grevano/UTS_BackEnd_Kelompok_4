@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const weatherDataModel = require('../../../models/weather-schema.js')(mongoose);
-const Weather = require("../../../models/weather-schema");
 
 /**Note: Ingat! tambahkan 'weatherDataModel.'
  * di depan fungsi yang dipanggil dari ../../../models/weather-schema.js
@@ -48,15 +47,24 @@ const getReadingIdsInRange = async (deviceName, startDate, endDate) => {
 };
 
 //Melakukan penghapusan berdasarkan id data bacaan
-const updatePrecipitationById = async (id, precipitation) => {
-  const result = await Weather.findByIdAndUpdate(
-    id,
-    { precipitation },
+const deleteReadingsByIds = async (ids) => {
+  return await weatherDataModel.deleteMany({ _id: { $in: ids } });
+};
+
+// Update precipitation berdasarkan entry ID
+const updatePrecipitationById = async (entryID, newPrecipitation) => {
+  return await weatherDataModel.findByIdAndUpdate(
+    entryID,
+    { precipitation: newPrecipitation },
     { new: true }
   );
-
-  return result;
 };
+
+
+//for testing purposes
+async function getStations(offset, limit) {
+  return weatherDataModel.find().skip(offset).limit(limit);
+}
 
 module.exports = {
   createWeatherStationInDB,
@@ -66,5 +74,6 @@ module.exports = {
   getReadingsByDateFromDB,
   getReadingIdsInRange,
   deleteReadingsByIds,
-  updatePrecipitationById
+  updatePrecipitationById,
+  getStations,
 }

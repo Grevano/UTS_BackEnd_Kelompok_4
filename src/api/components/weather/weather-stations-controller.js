@@ -2,16 +2,18 @@ const weatherStationService = require('./weather-stations-service.js');
 /**Note: Ingat! tambahkan weatherStationService.
  * di depan fungsi yang dipanggil dari weather-station-service.js
  */
-const { errorResponder, errorTypes } = require('../../../core/errors');
-//Tolong gantiin frederick gantheng
+
 const addWeatherStation = async (req, res) => {
   if (req.user.role !== "student") {
     try {
       const message = await weatherStationService.createWeatherStation(req.body);
       res.status(200).json({ message });
-    } catch (error) {
+    } catch (error){
       if (error.name === 'ValidationError') {
-        return res.status(400).json({ message: error.message });
+        // Membuat array berisi berbagai error
+        const errors = Object.values(error.errors).map(err => err.message);
+        // Menggabungkan error tersebut dengan koma
+        return res.status(400).json({ error: errors.join(', ') });
       }
       console.log(error.message);
       res.status(500).json({ message: error.message });
@@ -86,36 +88,49 @@ const deleteSensorReadingsInRange = async (req, res) => {
   }
 };
 
-const updatePrecipitation = async (req, res) => {
-  try {
-    const { entryID } = req.params;
-    const { precipitation } = req.body;
+// ✅ PATCH /weather-stations/:entryID/precipitation
+const patchPrecipitation = async (req, res) => {
+  if (req.user.role !== "student") {
+    try {
+      const { entryID } = req.params;
+      const { precipitation } = req.body;
 
-    if (precipitation === undefined || isNaN(precipitation)) {
-      return errorResponder(
-        res,
-        errorTypes.INVALID_INPUT,
-        'Precipitation must be a valid number'
-      );
+      if (!precipitation || isNaN(precipitation)) {
+        return res.status(400).json({ message: 'Valid precipitation value is required.' });
+      }
+
+      const updated = await weatherStationService.patchPrecipitation(entryID, precipitation);
+
+      if (!updated) {
+        return res.status(404).json({ message: 'Entry not found or update failed.' });
+      }
+
+      res.status(200).json({
+        message: `Precipitation of the ${updated.sensorName} entry was successfully updated to ${updated.precipitation}`,
+      });
+    } catch (error) {
+      console.error('Error updating precipitation:', error);
+      res.status(500).json({ message: 'Internal server error.' });
     }
-
-    const updated = await weatherStationService.updatePrecipitation(entryID, precipitation);
-
-    if (!updated) {
-      return errorResponder(
-        res,
-        errorTypes.RESOURCE_NOT_FOUND,
-        'Weather station entry not found'
-      );
-    }
-
-    res.status(200).json({ message: 'Precipitation updated successfully' });
-  } catch (err) {
-    console.error(err);
-    return errorResponder(res, errorTypes.INTERNAL_SERVER_ERROR, 'Something went wrong');
+  } else {
+    return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
 
+
+
+//for testing purposes
+async function getStations(request, response, next) {
+  try {
+    const offset = request.query.offset || 0;
+    const limit = request.query.limit || 20;
+    const users = await weatherStationService.getStations(offset, limit);
+
+    return response.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+}
 
 //Mau dibikin module.export aja?
 module.exports = {
@@ -124,5 +139,6 @@ module.exports = {
   getMaxPrecipitation,
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
-  patchPrecipitation
+  getStations,
+  patchPrecipitation,
 }

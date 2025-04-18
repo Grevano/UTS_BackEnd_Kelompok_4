@@ -2,18 +2,6 @@ const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const { hashPassword } = require('../../../utils/password');
 
-async function getUsers(request, response, next) {
-  try {
-    const offset = request.query.offset || 0;
-    const limit = request.query.limit || 20;
-    const users = await usersService.getUsers(offset, limit);
-
-    return response.status(200).json(users);
-  } catch (error) {
-    return next(error);
-  }
-}
-
 async function getAdminUsers(request, response, next) {
   try {
     const offset = request.query.offset || 0;
@@ -26,22 +14,6 @@ async function getAdminUsers(request, response, next) {
   }
 }
 
-async function getUser(request, response, next) {
-  try {
-    const user = await usersService.getUser(request.params.id);
-
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-
-    return response.status(200).json(user);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-
-
 const allowedRoles = ['admin', 'teacher', 'student']
 async function createUser(request, response, next) {
   try {
@@ -52,6 +24,11 @@ async function createUser(request, response, next) {
       confirm_password: confirmPassword,
       role: role,
     } = request.body;
+
+    let lastSession = (request.body.lastSession && !isNaN(new Date(request.body.lastSession)))
+      ? new Date(request.body.lastSession)
+      : new Date();
+    
 
     // Email is required and cannot be empty
     if (!email) {
@@ -65,18 +42,28 @@ async function createUser(request, response, next) {
         'Full name is required'
       );
     }
-
-    if (!allowedRoles.includes(role)){
+    
+    // Role can only be either admin, teacher, or student
+    if (!allowedRoles.includes(role) || !role){
       throw errorResponder(
         errorTypes.VALIDATION_ERROR,
         'Invalid or Empty role'
       );
     }
+
     // Email must be unique
     if (await usersService.emailExists(email)) {
       throw errorResponder(
         errorTypes.EMAIL_ALREADY_TAKEN,
         'Email already exists'
+      );
+    }
+
+    // The password is at least 8 characters long
+    if (!password) {
+      throw errorResponder(
+        errorTypes.VALIDATION_ERROR,
+        'Password is required'
       );
     }
 
@@ -104,7 +91,8 @@ async function createUser(request, response, next) {
       email,
       hashedPassword,
       fullName,
-      role
+      role,
+      lastSession
     );
 
     if (!success) {
@@ -120,85 +108,7 @@ async function createUser(request, response, next) {
   }
 }
 
-async function updateUser(request, response, next) {
-  try {
-    const { email, full_name: fullName } = request.body;
-
-    // User must exist
-    const user = await usersService.getUser(request.params.id);
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
-    }
-
-    // Email is required and cannot be empty
-    if (!email) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
-    }
-
-    // Full name is required and cannot be empty
-    if (!fullName) {
-      throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
-        'Full name is required'
-      );
-    }
-
-    // Email must be unique, if it is changed
-    if (email !== user.email && (await usersService.emailExists(email))) {
-      throw errorResponder(
-        errorTypes.EMAIL_ALREADY_TAKEN,
-        'Email already exists'
-      );
-    }
-
-    const success = await usersService.updateUser(
-      request.params.id,
-      email,
-      fullName
-    );
-
-    if (!success) {
-      throw errorResponder(
-        errorTypes.UNPROCESSABLE_ENTITY,
-        'Failed to update user'
-      );
-    }
-
-    return response.status(200).json({ message: 'User updated successfully' });
-  } catch (error) {
-    return next(error);
-  }
-}
-
-async function changePassword(request, response, next) {
-  // TODO: Implement this function
-  // const id = request.params.id;
-  // const {
-  //   old_password: oldPassword,
-  //   new_password: newPassword,
-  //   confirm_new_password: confirmNewPassword,
-  // } = request.body;
-  //
-  // Make sure that:
-  // - the user exists by checking the user ID
-  // - the old password is correct
-  // - the new password is at least 8 characters long
-  // - the new password is different from the old password
-  // - the new password and confirm new password match
-  //
-  // Note that the password is hashed in the database, so you need to
-  // compare the hashed password with the old password. Use the passwordMatched
-  // function from src/utils/password.js to compare the old password with the
-  // hashed password.
-  //
-  // If any of the conditions above is not met, return an error response
-  // with the appropriate status code and message.
-  //
-  // If all conditions are met, update the user's password and return
-  // a success response.
-  return next(errorResponder(errorTypes.NOT_IMPLEMENTED));
-}
-
+//for testing purposes
 async function deleteUser(request, response, next) {
   try {
     const success = await usersService.deleteUser(request.params.id);
@@ -216,34 +126,45 @@ async function deleteUser(request, response, next) {
   }
 }
 
-async function deleteStudentUsers(request, response, next) {
+async function deleteStudentsByLastSession(request, response, next) {
   try {
-    const result = await usersService.deleteAllStudentUsers();
+    const { startDate, endDate } = request.query;
 
-
-    if (!success) {
-      throw errorResponder(
-        errorTypes.UNPROCESSABLE_ENTITY,
-        'Failed to create user'
-      );
+    if (!startDate || !endDate) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Start date and end date are required');
     }
 
-    return response.status(200).json({
-      message: `${result.deletedCount} student(s) deleted successfully.`,
-    });
-    
+    const deletedCount = await usersService.deleteStudentsByLastSession(startDate, endDate);
+
+    if (deletedCount === 0) {
+      return response.status(404).json({ message: 'No student accounts found in the provided date range' });
+    }
+
+    return response.status(200).json({ message: `${deletedCount} student accounts deleted successfully` });
   } catch (error) {
     return next(error);
   }
 }
 
+
+//for testing purposes
+async function getUsers(request, response, next) {
+  try {
+    const offset = request.query.offset || 0;
+    const limit = request.query.limit || 20;
+    const users = await usersService.getUsers(offset, limit);
+
+    return response.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 module.exports = {
   getUsers,
   getAdminUsers,
-  getUser,
   createUser,
-  updateUser,
-  changePassword,
   deleteUser,
-  deleteStudentUsers,
+  deleteStudentsByLastSession,
 };

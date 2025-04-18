@@ -1,15 +1,7 @@
 const usersRepository = require('./users-repository');
 
-async function getUsers(offset, limit) {
-  return usersRepository.getUsers(offset, limit);
-}
-
 async function getAdminUsers(offset, limit) {
   return usersRepository.getAdminUsers(offset, limit);
-}
-
-async function getUser(id) {
-  return usersRepository.getUser(id);
 }
 
 async function emailExists(email) {
@@ -17,22 +9,28 @@ async function emailExists(email) {
   return !!user; // Return true if user exists, false otherwise
 }
 
-async function createUser(email, password, fullName, role) {
-  return usersRepository.createUser(email, password, fullName, role);
+async function createUser(email, password, fullName, role, lastSession) {
+  return usersRepository.createUser(email, password, fullName, role, lastSession);
 }
 
-async function updateUser(id, email, fullName) {
-  return usersRepository.updateUser(id, email, fullName);
-}
 
+//for testing purposes
 async function deleteUser(id) {
   return usersRepository.deleteUser(id);
 }
 
-async function deleteAllStudentUsers() {
-  const deletedCount = await usersRepository.deleteAllStudents();
-  return { deletedCount };
+async function getUser(id) {
+  return usersRepository.getUser(id);
 }
+
+async function getUsers(offset, limit) {
+  return usersRepository.getUsers(offset, limit);
+}
+
+async function deleteStudentsByLastSession(startDate, endDate) {
+  return usersRepository.deleteStudentsByLastSession(startDate, endDate);
+}
+
 
 module.exports = {
   getUsers,
@@ -40,7 +38,6 @@ module.exports = {
   getUser,
   emailExists,
   createUser,
-  updateUser,
   deleteUser,
-  deleteAllStudentUsers,
+  deleteStudentsByLastSession,
 };
