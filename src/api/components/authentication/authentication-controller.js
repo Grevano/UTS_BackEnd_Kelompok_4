@@ -6,7 +6,7 @@ async function login(request, response, next) {
     const { email, password} = request.body;
     if (!email || !password) {
       throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
+        errorTypes.VALIDATION,
         'Please provide a username, a password'
       );
     }

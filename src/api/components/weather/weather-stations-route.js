@@ -26,4 +26,7 @@ module.exports = (app) => {
 
   //for testing purposes, get all weatherStations
   router.get("/",authenticateToken, weatherStationsController.getStations)
+
+  //for testing purposes, delete station by id
+  router.delete("/delete/:id",authenticateToken, isAdmin, weatherStationsController.deleteStation)
 }

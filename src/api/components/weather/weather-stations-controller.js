@@ -88,6 +88,7 @@ const deleteSensorReadingsInRange = async (req, res) => {
   }
 };
 
+//for testing purposes
 async function getStations(request, response, next) {
   try {
     const offset = request.query.offset || 0;
@@ -100,6 +101,24 @@ async function getStations(request, response, next) {
   }
 }
 
+//for testing purposes
+async function deleteStation(request, response, next) {
+  try {
+    const success = await weatherStationService.deleteStation(request.params.id);
+
+    if (!success) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to delete weather'
+      );
+    }
+
+    return response.status(200).json({ message: 'Weather Station deleted successfully' });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 //Mau dibikin module.export aja?
 module.exports = {
   addWeatherStation,
@@ -107,5 +126,6 @@ module.exports = {
   getMaxPrecipitation,
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
-  getStations
+  getStations,
+  deleteStation
 }

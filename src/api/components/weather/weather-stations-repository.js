@@ -51,8 +51,14 @@ const deleteReadingsByIds = async (ids) => {
   return await weatherDataModel.deleteMany({ _id: { $in: ids } });
 };
 
+//for testing purposes
 async function getStations(offset, limit) {
   return weatherDataModel.find().skip(offset).limit(limit);
+}
+
+//for testing purposes
+async function deleteStation(id) {
+  return weatherDataModel.deleteOne({ _id: id });
 }
 
 module.exports = {
@@ -63,5 +69,6 @@ module.exports = {
   getReadingsByDateFromDB,
   getReadingIdsInRange,
   deleteReadingsByIds,
-  getStations
+  getStations,
+  deleteStation
 }
