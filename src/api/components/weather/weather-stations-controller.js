@@ -87,7 +87,8 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
-  async function getStations(request, response, next) {
+  
+async function getStations(request, response, next) {
   try {
     const offset = request.query.offset || 0;
     const limit = request.query.limit || 20;
@@ -98,21 +99,30 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return next(error);
   }
 }
-
 //function create API to: GET | /weather-stations/max-temperature
 //get max temperature in data range for all data
 //API Results example: { "deviceName= Station-XYZ",
 //"maxTemperature =50.64"}
 const getMaxTemperature = async (req, res) => {
-  try {
-    const results = await weatherStationService.getMaxTemperature();
-
-    res.status(200).json(results);
-  } catch (error) {
-    console.error('Error in getMaxTemperature:', error.message);
-    res.status(500).json({ message: error.message });
-  }
-};
+    try {
+      const { startDate, endDate } = req.query;
+  
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "startDate and endDate are required query parameters." });
+      }
+  
+      const result = await weatherStationService.getMaxTemperatureInRange(startDate, endDate);
+  
+      if (result.length === 0) {
+        return res.status(404).json({ message: "No data found in the provided date range." });
+      }
+  
+      res.status(200).json(result[0]);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: error.message });
+    }
+  };
 
 
 //Mau dibikin module.export aja?
@@ -123,5 +133,5 @@ module.exports = {
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
   getStations,
-  getMaxTemperature
+  getMaxTemperature,
 }

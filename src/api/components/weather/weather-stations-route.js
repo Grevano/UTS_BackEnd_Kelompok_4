@@ -25,10 +25,9 @@ module.exports = (app) => {
   router.delete("/:deviceName/readings", authenticateToken, weatherStationsController.deleteSensorReadingsInRange);
 
   //Get maximum temperature in data range for all data
-  route.get('/weather-stations/max-temperature', controller.getMaxTemperature);
-  
-  //for testing purposes, get All WeatherStations
-  router.get("/",authenticateToken,weatherStationsController.getStations)
-  
+  app.get("/:deviceName/max-temperature", authenticateToken, weatherStationsController.getMaxTemperature);
 
+  //for testing purposes, get All WeatherStations
+  router.get("/", authenticateToken, weatherStationsController.getStations);
+  
 }

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const weatherDataModel = require('../../../models/weather-schema.js')(mongoose);
-
 /**Note: Ingat! tambahkan 'weatherDataModel.'
  * di depan fungsi yang dipanggil dari ../../../models/weather-schema.js
  */
@@ -54,26 +53,15 @@ const deleteReadingsByIds = async (ids) => {
 async function getStations(offset,limit) {
   return weatherDataModel.find().skip(offset).limit(limit);
 }
-const weatherRepository = require('./weather-stations-repository');
 
-const findMaxTemperature = async () => {
+const findMaxTemperatureInRange = async (startDate, endDate) => {
   return await weatherDataModel.aggregate([
-    {
-      $group: {
-        _id: '$deviceName',
-        maxTemperature: { $max: '$temperature' },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        deviceName: '$_id',
-        maxTemperature: 1
-      },
-    }
+    { $match: { time: { $gte: new Date(startDate), $lt: new Date(endDate) } } },
+    { $sort: { temperature: -1 } },
+    { $limit: 1 },
+    { $project: { deviceName: 1, maxTemperature: '$temperature', _id: 0 } }
   ]);
 };
-
 
 module.exports = {
   createWeatherStationInDB,
@@ -84,5 +72,5 @@ module.exports = {
   getReadingIdsInRange,
   deleteReadingsByIds,
   getStations,
-  findMaxTemperature
+  findMaxTemperatureInRange,
 }

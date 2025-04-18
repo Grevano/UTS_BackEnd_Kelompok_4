@@ -59,10 +59,8 @@ async function getStations(offset,limit){
   return weatherStationRepository.getStations(offset,limit);
 }
 
-const weatherRepository = require('./weather-stations-repository');
-
-async function getMaxTemperature() {
-  return await weatherRepository.findMaxTemperature();
+async function getMaxTemperatureInRange(startDate, endDate) {
+  return await weatherStationRepository.findMaxTemperatureInRange(startDate, endDate);
 }
 
 //Ini mau dibikin module export aja?
@@ -73,5 +71,5 @@ module.exports = {
   getReadingsByDateService,
   deleteSensorReadingsInRange,
   getStations,
-  getMaxTemperature
+  getMaxTemperatureInRange,
 };
