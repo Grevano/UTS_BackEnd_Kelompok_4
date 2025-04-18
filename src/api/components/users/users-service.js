@@ -21,10 +21,6 @@ async function createUser(email, password, fullName, role) {
   return usersRepository.createUser(email, password, fullName, role);
 }
 
-async function updateUser(id, email, fullName) {
-  return usersRepository.updateUser(id, email, fullName);
-}
-
 async function updateRole(id, role) {
   return usersRepository.updateRole(id, role);
 }
@@ -39,7 +35,6 @@ module.exports = {
   getUser,
   emailExists,
   createUser,
-  updateUser,
   deleteUser,
   updateRole,
 };
