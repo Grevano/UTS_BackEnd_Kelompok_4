@@ -3,15 +3,17 @@ const weatherStationService = require('./weather-stations-service.js');
  * di depan fungsi yang dipanggil dari weather-station-service.js
  */
 
-//Tolong gantiin frederick gantheng
 const addWeatherStation = async (req, res) => {
   if (req.user.role !== "student") {
     try {
       const message = await weatherStationService.createWeatherStation(req.body);
       res.status(200).json({ message });
-    } catch (error) {
+    } catch (error){
       if (error.name === 'ValidationError') {
-        return res.status(400).json({ message: error.message });
+        // Membuat array berisi berbagai error
+        const errors = Object.values(error.errors).map(err => err.message);
+        // Menggabungkan error tersebut dengan koma
+        return res.status(400).json({ error: errors.join(', ') });
       }
       console.log(error.message);
       res.status(500).json({ message: error.message });
