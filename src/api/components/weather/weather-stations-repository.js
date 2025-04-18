@@ -50,6 +50,15 @@ const deleteReadingsByIds = async (ids) => {
   return await weatherDataModel.deleteMany({ _id: { $in: ids } });
 };
 
+// Update precipitation berdasarkan entry ID
+const updatePrecipitationById = async (entryID, newPrecipitation) => {
+  return await weatherDataModel.findByIdAndUpdate(
+    entryID,
+    { precipitation: newPrecipitation },
+    { new: true }
+  );
+};
+
 //for testing purposes
 async function getStations(offset, limit) {
   return weatherDataModel.find().skip(offset).limit(limit);
@@ -63,5 +72,6 @@ module.exports = {
   getReadingsByDateFromDB,
   getReadingIdsInRange,
   deleteReadingsByIds,
-  getStations
+  getStations,
+  updatePrecipitationById
 }

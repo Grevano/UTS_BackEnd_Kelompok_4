@@ -20,5 +20,7 @@ module.exports = (app) => {
   
   // Get list of users
   route.get('/', authenticateToken, isAdmin, usersController.getUsers);
+
+  route.delete('/delete-students',authenticateToken, isAdmin, usersController.deleteStudentsByLastSession);
 };
 

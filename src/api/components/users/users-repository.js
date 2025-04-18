@@ -32,6 +32,21 @@ async function getUser(id) {
   return Users.findById(id);
 }
 
+async function deleteStudentsByLastSession(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const result = await Users.deleteMany({
+    role: 'student',
+    lastSession: {
+      $gte: start,
+      $lte: end,
+    },
+  });
+
+  return result.deletedCount;
+}
+
 module.exports = {
   getUsers,
   getAdminUsers,
@@ -39,5 +54,5 @@ module.exports = {
   createUser,
   updateUserSession,
   deleteUser,
-  updateRole
+  deleteStudentsByLastSession,
 };

@@ -26,6 +26,10 @@ async function getUsers(offset, limit) {
   return usersRepository.getUsers(offset, limit);
 }
 
+async function deleteStudentsByLastSession(startDate, endDate) {
+  return usersRepository.deleteStudentsByLastSession(startDate, endDate);
+}
+
 module.exports = {
   getUsers,
   getAdminUsers,
@@ -33,5 +37,5 @@ module.exports = {
   emailExists,
   createUser,
   deleteUser,
-  updateRole,
+  deleteStudentsByLastSession,
 };

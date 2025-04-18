@@ -24,6 +24,9 @@ module.exports = (app) => {
   //Delete weather readings from a range of time
   router.delete("/:deviceName/readings", authenticateToken, weatherStationsController.deleteSensorReadingsInRange);
 
+  // ✅ Update precipitation by entry ID
+  router.patch("/:entryID/precipitation", authenticateToken, weatherStationsController.patchPrecipitation);
+
   //for testing purposes, get all weatherStations
   router.get("/",authenticateToken, weatherStationsController.getStations)
 }

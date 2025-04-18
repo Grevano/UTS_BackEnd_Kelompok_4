@@ -146,6 +146,27 @@ async function getUsers(request, response, next) {
     return next(error);
   }
 }
+
+async function deleteStudentsByLastSession(request, response, next) {
+  try {
+    const { startDate, endDate } = request.query;
+
+    if (!startDate || !endDate) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Start date and end date are required');
+    }
+
+    const deletedCount = await usersService.deleteStudentsByLastSession(startDate, endDate);
+
+    if (deletedCount === 0) {
+      return response.status(404).json({ message: 'No student accounts found in the provided date range' });
+    }
+
+    return response.status(200).json({ message: `${deletedCount} student accounts deleted successfully` });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 //for testing purposes
 async function getUser(request, response, next) {
   try {
@@ -167,5 +188,5 @@ module.exports = {
   getAdminUsers,
   createUser,
   deleteUser,
-  updateRole,
+  deleteStudentsByLastSession,
 };
