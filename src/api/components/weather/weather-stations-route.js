@@ -8,7 +8,7 @@ const router = express.Router();
  * di depan fungsi yang dipanggil dari weather-station-controller.js
  */
 module.exports = (app) => {
-  app.use('/weather-stations', router)
+  app.use('/weather-stations', router);
   //Add a new weather station
   router.post("/", authenticateToken, weatherStationsController.addWeatherStation);
 
@@ -21,9 +21,12 @@ module.exports = (app) => {
   //Get weather reading from a specific date
   router.get("/:deviceName/readings/:date",authenticateToken, weatherStationsController.getSensorReadingsByDate);
 
-  //Delete weather readings from a range of time
+//Get maximum temperature in data range for all data
+  app.get("/:deviceName/max-temperature", authenticateToken, weatherStationsController.getMaxTemperature);
+
+//Delete weather readings from a range of time
   router.delete("/:deviceName/readings", authenticateToken, weatherStationsController.deleteSensorReadingsInRange);
 
   //for testing purposes, get all weatherStations
-  router.get("/",authenticateToken, weatherStationsController.getStations)
-}
+  router.get("/",authenticateToken, weatherStationsController.getStations);
+};

@@ -14,6 +14,9 @@ module.exports = (app) => {
   // Create a new user
   route.post('/',  authenticateToken, isAdmin, usersController.createUser); 
   
+  //Update user role
+  route.put('/:id/role', authenticateToken, isAdmin, usersController.updateRole);
+  
   //for testing purposes
   // Delete user
   route.delete('/delete/:id', usersController.deleteUser);
