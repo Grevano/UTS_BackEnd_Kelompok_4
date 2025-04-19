@@ -58,6 +58,7 @@ const updatePrecipitationById = async (entryID, newPrecipitation) => {
     { precipitation: newPrecipitation },
     { new: true }
   );
+};
   
 //cari suhu tertinggi berdasarkan rentang waktu
 const findMaxTemperatureInRange = async (startDate, endDate) => {
