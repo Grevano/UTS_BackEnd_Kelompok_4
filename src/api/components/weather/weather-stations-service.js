@@ -73,10 +73,15 @@ const patchPrecipitation = async (entryID, newPrecipitation) => {
   };
 };
 
+async function getMaxTemperatureInRange(startDate, endDate) {
+  return await weatherStationRepository.findMaxTemperatureInRange(startDate, endDate);
+}
+
+
 //for testing purposes
 async function getStations(offset, limit) {
   return weatherStationRepository.getStations(offset, limit);
-}
+};
 
 //Ini mau dibikin module export aja?
 module.exports = {
@@ -86,5 +91,6 @@ module.exports = {
   getReadingsByDateService,
   deleteSensorReadingsInRange,
   getStations,
-  patchPrecipitation
+  patchPrecipitation,
+  getMaxTemperatureInRange,
 };

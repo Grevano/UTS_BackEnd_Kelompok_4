@@ -17,6 +17,9 @@ async function updateUserSession(id) {
   return Users.updateOne({ _id: id }, { lastSession: Date.now() })
 }
 
+async function updateRole(id, role) {
+  return Users.updateOne({ _id: id }, { $set: { role } });
+}
 //for testing purposes
 async function deleteUser(id) {
   return Users.deleteOne({ _id: id });
@@ -49,6 +52,7 @@ async function deleteStudentsByLastSession(startDate, endDate) {
 
 module.exports = {
   getUsers,
+  getUser,
   getAdminUsers,
   getUserByEmail,
   createUser,

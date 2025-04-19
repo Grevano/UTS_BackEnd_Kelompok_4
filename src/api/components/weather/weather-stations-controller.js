@@ -87,8 +87,6 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
-
-
 // ✅ PATCH /weather-stations/:entryID/precipitation
 const patchPrecipitation = async (req, res) => {
   if (req.user.role !== "student") {
@@ -118,6 +116,31 @@ const patchPrecipitation = async (req, res) => {
   }
 };
 
+// ✅ GET /weather-stations/max-temperature
+// Get max temperature in data range for all data
+// Example response: { "deviceName": "Station-XYZ", "maxTemperature": 50.64 }
+const getMaxTemperature = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "startDate and endDate are required query parameters." });
+    }
+
+    const result = await weatherStationService.getMaxTemperatureInRange(startDate, endDate);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No data found in the provided date range." });
+    }
+
+    res.status(200).json(result[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 //for testing purposes
 async function getStations(request, response, next) {
   try {
@@ -129,7 +152,7 @@ async function getStations(request, response, next) {
   } catch (error) {
     return next(error);
   }
-}
+};
 
 //Mau dibikin module.export aja?
 module.exports = {
@@ -140,4 +163,6 @@ module.exports = {
   deleteSensorReadingsInRange,
   getStations,
   patchPrecipitation,
-}
+  getMaxTemperature,
+};
+

@@ -50,6 +50,7 @@ const deleteReadingsByIds = async (ids) => {
   return await weatherDataModel.deleteMany({ _id: { $in: ids } });
 };
 
+
 // Update precipitation berdasarkan entry ID
 const updatePrecipitationById = async (entryID, newPrecipitation) => {
   return await weatherDataModel.findByIdAndUpdate(
@@ -57,12 +58,22 @@ const updatePrecipitationById = async (entryID, newPrecipitation) => {
     { precipitation: newPrecipitation },
     { new: true }
   );
+  
+//cari suhu tertinggi berdasarkan rentang waktu
+const findMaxTemperatureInRange = async (startDate, endDate) => {
+  return await weatherDataModel.aggregate([
+    { $match: { time: { $gte: new Date(startDate), $lt: new Date(endDate) } } },
+    { $sort: { temperature: -1 } },
+    { $limit: 1 },
+    { $project: { deviceName: 1, maxTemperature: '$temperature', _id: 0 } }
+  ]);
+  
 };
 
 //for testing purposes
 async function getStations(offset, limit) {
   return weatherDataModel.find().skip(offset).limit(limit);
-}
+};
 
 module.exports = {
   createWeatherStationInDB,
@@ -73,5 +84,6 @@ module.exports = {
   getReadingIdsInRange,
   deleteReadingsByIds,
   getStations,
-  updatePrecipitationById
-}
+  updatePrecipitationById,
+  findMaxTemperatureInRange,
+};
