@@ -20,6 +20,7 @@ async function updateUserSession(id) {
 async function updateRole(id, role) {
   return Users.updateOne({ _id: id }, { $set: { role } });
 }
+
 //for testing purposes
 async function deleteUser(id) {
   return Users.deleteOne({ _id: id });

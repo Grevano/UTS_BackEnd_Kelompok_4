@@ -158,6 +158,9 @@ async function updateRole(request, response, next) {
     const { role } = request.body;
     const userId = request.params.id;
 
+    // Extract current logged-in user from request
+    const currentUser = request.user;
+
     // Check if the user exists
     const user = await usersService.getUser(userId);
     if (!user) {
@@ -168,15 +171,11 @@ async function updateRole(request, response, next) {
     if (!allowedRoles.includes(role)) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or Empty role');
     }
-
-    // Update the user's role
-    const success = await usersService.updateRole(userId, role);
-    if (!success) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Failed to update role');
-    }
+  
     return response.status(200).json({ message: 'User role updated successfully' });
   } catch (error) {
     return next(error);
+    
   }
 }
 

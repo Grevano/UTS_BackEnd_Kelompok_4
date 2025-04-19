@@ -15,7 +15,7 @@ module.exports = (app) => {
   route.post('/',  authenticateToken, isAdmin, usersController.createUser); 
   
   //Update user role
-  route.put('/:id/role', authenticateToken, isAdmin, usersController.updateRole);
+  route.put('/:id/role', authenticateToken,isAdmin, usersController.updateRole); 
   
   //for testing purposes
   // Delete user

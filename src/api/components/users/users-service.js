@@ -14,10 +14,6 @@ async function createUser(email, password, fullName, role, lastSession) {
 }
 
 async function updateRole(id, role) {
-  const user = await usersRepository.getUser(id);
-  if (!user) {
-    throw new Error('User not found');
-  }
   return usersRepository.updateRole(id, role);
 }
 
