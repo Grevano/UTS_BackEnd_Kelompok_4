@@ -87,11 +87,38 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
+// ✅ PATCH /weather-stations/:entryID/precipitation
+const patchPrecipitation = async (req, res) => {
+  if (req.user.role !== "student") {
+    try {
+      const { entryID } = req.params;
+      const { precipitation } = req.body;
 
-//function create API to: GET | /weather-stations/max-temperature
-//get max temperature in data range for all data
-//API Results example: { "deviceName= Station-XYZ",
-//"maxTemperature =50.64"}
+      if (!precipitation || isNaN(precipitation)) {
+        return res.status(400).json({ message: 'Valid precipitation value is required.' });
+      }
+
+      const updated = await weatherStationService.patchPrecipitation(entryID, precipitation);
+
+      if (!updated) {
+        return res.status(404).json({ message: 'Entry not found or update failed.' });
+      }
+
+      res.status(200).json({
+        message: `Precipitation of the ${updated.sensorName} entry was successfully updated to ${updated.precipitation}`,
+      });
+    } catch (error) {
+      console.error('Error updating precipitation:', error);
+      res.status(500).json({ message: 'Internal server error.' });
+    }
+  } else {
+    return res.status(401).json({ message: "You are not authorised to access this content" });
+  }
+};
+
+// ✅ GET /weather-stations/max-temperature
+// Get max temperature in data range for all data
+// Example response: { "deviceName": "Station-XYZ", "maxTemperature": 50.64 }
 const getMaxTemperature = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
@@ -112,6 +139,7 @@ const getMaxTemperature = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 //for testing purposes
 async function getStations(request, response, next) {
@@ -134,5 +162,7 @@ module.exports = {
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
   getStations,
+  patchPrecipitation,
   getMaxTemperature,
 };
+

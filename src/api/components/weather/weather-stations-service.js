@@ -55,9 +55,28 @@ const deleteSensorReadingsInRange = async (deviceName, rawStartDate, rawEndDate)
   return { deletedCount: deleteResult.deletedCount, notFound: false };
 };
 
+const patchPrecipitation = async (entryID, newPrecipitation) => {
+  const updated = await weatherStationRepository.updatePrecipitationById(entryID, newPrecipitation);
+  
+  if (!updated) {
+    throw new Error(`Entry with ID '${entryID}' not found`);
+  }
+
+  return {
+    message: `Precipitation updated successfully`,
+    updatedEntry: {
+      _id: updated._id,
+      deviceName: updated.deviceName,
+      time: updated.time,
+      precipitation: updated.precipitation
+    }
+  };
+};
+
 async function getMaxTemperatureInRange(startDate, endDate) {
   return await weatherStationRepository.findMaxTemperatureInRange(startDate, endDate);
-};
+}
+
 
 //for testing purposes
 async function getStations(offset, limit) {
@@ -72,5 +91,6 @@ module.exports = {
   getReadingsByDateService,
   deleteSensorReadingsInRange,
   getStations,
+  patchPrecipitation,
   getMaxTemperatureInRange,
 };
