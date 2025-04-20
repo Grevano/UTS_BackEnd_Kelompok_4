@@ -14,7 +14,8 @@ async function createUser(email, password, fullName, role, lastSession) {
 }
 
 async function updateRole(id, role) {
-  return usersRepository.updateRole(id, role);
+  const result = await usersRepository.updateRole(id, role);
+  return result.modifiedCount > 0;
 }
 
 //for testing purposes

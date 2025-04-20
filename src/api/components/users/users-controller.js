@@ -171,7 +171,7 @@ async function updateRole(request, response, next) {
     if (!allowedRoles.includes(role)) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or Empty role');
     }
-  
+    await usersService.updateRole(userId, role);
     return response.status(200).json({ message: 'User role updated successfully' });
   } catch (error) {
     return next(error);
