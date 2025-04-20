@@ -40,13 +40,16 @@ const addSensorReadingsForStation = async (req, res) => {
 const getMaxPrecipitation = async (req, res) => {
   try {
     const deviceName = req.params.deviceName;
-
     const result = await weatherStationService.getMaxPrecipitation(deviceName);
-
     res.status(200).json(result);
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: error.message });
+    // Cek apakah ada data weather-station bersangkutan
+    if (error.message.includes('No data found')) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
@@ -57,8 +60,13 @@ const getSensorReadingsByDate = async (req, res) => {
 
     res.status(200).json(result);
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    console.error(error.message);
+    // Cek apakah ada data weather-station bersangkutan
+    if (error.message.includes('No data found')) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
