@@ -13,10 +13,11 @@ async function createUser(email, password, fullName, role, lastSession) {
   return usersRepository.createUser(email, password, fullName, role, lastSession);
 }
 
-async function updateRole(id, role) {
-  const result = await usersRepository.updateRole(id, role);
-  return result.modifiedCount > 0;
+async function updateRolesByDateRange(startDate, endDate, role) {
+  const result = await usersRepository.updateRolesByDateRange(startDate, endDate, role);
+  return result.modifiedCount;
 }
+
 
 //for testing purposes
 async function deleteUser(id) {
@@ -38,5 +39,5 @@ module.exports = {
   emailExists,
   createUser,
   deleteUser,
-  updateRole,
+  updateRolesByDateRange,
 };

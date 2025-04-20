@@ -40,7 +40,7 @@ async function createUser(request, response, next) {
       throw errorResponder(errorTypes.EMPTY_BODY, 'Request Body empty, please fill with Email, Full Name, Password, ConfirmPassword, and Role (or LastSession)');
     }
     
-    // Role can only be either admin, teacher, or student
+    // role can only be either admin, teacher, or student
     if (!allowedRoles.includes(role) || !role){
       throw errorResponder(
         errorTypes.VALIDATION_ERROR,
@@ -84,11 +84,11 @@ async function createUser(request, response, next) {
         'Password and confirm password do not match'
       );
     }
-//Role can onlly be either admin, teacher, or student
+//role can onlly be either admin, teacher, or student
     if (!allowedRoles.includes(role)){
       throw errorResponder(
         errorTypes.VALIDATION,
-        'Invalid Role'
+        'Invalid role'
       );
     }
 
@@ -149,35 +149,31 @@ async function getUsers(request, response, next) {
 
 //function to update the role of the user and make sure that the role is not empty or invalid
 // and the user exists, but make sure that only the admin can update the role of the user
-// and the user cannot update his own role
-//PUT https://localhost:5000/users/roles
-//body: { role: 'admin' }
-//params: { id: 'userId' }
-async function updateRole(request, response, next) {
+//the body section must fill like this {"startDate": "2025-04-18T06:26:09.568+00:00", "endDate": "2025-04-18T06:26:09.568+00:00", "role": "admin"}
+//without parameters required at all
+//and the role can only be either admin, teacher, or student
+
+async function updateRolesByDateRange(request, response, next) {
   try {
-    const { role } = request.body;
-    const userId = request.params.id;
+    const { startDate, endDate, role } = request.body;
 
-    // Extract current logged-in user from request
-    const currentUser = request.user;
-
-    // Check if the user exists
-    const user = await usersService.getUser(userId);
-    if (!user) {
-      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'User not found');
+    if (!startDate || !endDate || !role) {
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Missing required fields: startDate, endDate, or role');
     }
 
-    // Check if the role is valid
     if (!allowedRoles.includes(role)) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or Empty role');
+      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or empty role');
     }
-    await usersService.updateRole(userId, role);
-    return response.status(200).json({ message: 'User role updated successfully' });
+
+    const updatedCount = await usersService.updateRolesByDateRange(startDate, endDate, role);
+
+    return response.status(200).json({ message: `${updatedCount} account(s) updated to ${role} role successfully.` });
   } catch (error) {
     return next(error);
-    
   }
 }
+
+
 
 //for testing purposes
 async function getUser(request, response, next) {
@@ -200,6 +196,6 @@ module.exports = {
   getAdminUsers,
   createUser,
   deleteUser,
-  updateRole,
+  updateRolesByDateRange,
   getUser,
 };

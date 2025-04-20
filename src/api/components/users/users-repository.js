@@ -17,8 +17,23 @@ async function updateUserSession(id) {
   return Users.updateOne({ _id: id }, { lastSession: Date.now() })
 }
 
-async function updateRole(id, role) {
-  return Users.updateOne({ _id: id }, { $set: { role } });
+async function updateRolesByDateRange(startDate, endDate, role) {
+  const parsedStartDate = new Date(startDate);
+  const parsedEndDate = new Date(endDate);
+  
+  if (isNaN(parsedStartDate) || isNaN(parsedEndDate)) {
+    throw new Error('Invalid date format for startDate or endDate');
+  }
+  
+  return Users.updateMany(
+    {
+      lastSession: {
+        $gte: parsedStartDate,
+        $lte: parsedEndDate,
+      },
+    },
+    { $set: { role } }
+  );
 }
 
 //for testing purposes
@@ -44,5 +59,5 @@ module.exports = {
   createUser,
   updateUserSession,
   deleteUser,
-  updateRole
+  updateRolesByDateRange,
 };
