@@ -1,5 +1,4 @@
 //menggunakan bcrypt untuk menghash password dan keperluan authentication lainnya
-//untuk sekarang code ini mengikuti template 
 const bcrypt = require('bcrypt');
 
 /**

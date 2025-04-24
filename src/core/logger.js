@@ -1,5 +1,4 @@
 //pino membantu dan merapikan output saat logging dengan format dan me-redact informasi sensitif
-//untuk sekarang semua code ini mengikuti template 
 const pino = require('pino');
 
 // Print the log to STDOUT with colors and formatting for easier read

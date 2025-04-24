@@ -1,5 +1,4 @@
 //daftar error yang digunakan
-//untuk sekarang semua code ini mengikuti template 
 const errorTypes = {
     SERVER: {
       description: 'Server error occurred',

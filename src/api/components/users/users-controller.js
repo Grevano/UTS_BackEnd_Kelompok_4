@@ -32,10 +32,6 @@ async function createUser(request, response, next) {
       role: role,
     } = request.body;
 
-    if(usersService.emailExists(email)){
-      throw errorResponder(errorTypes.EMAIL_ALREADY_TAKEN, 'Email already exists');
-    }
-
     let lastSession = (request.body.lastSession && !isNaN(new Date(request.body.lastSession)))
       ? new Date(request.body.lastSession)
       : new Date();
