@@ -34,11 +34,13 @@ async function updateRolesByDateRange(startDate, endDate, role) {
     },
     { $set: { role } }
   );
+  return result.modifiedCount;
 }
 
 //for testing purposes
 async function deleteUser(id) {
-  return Users.deleteOne({ _id: id });
+  const result = await Users.deleteOne({_id: id});
+  return result.deletedCount > 0;
 }
 
 //for testing purposes

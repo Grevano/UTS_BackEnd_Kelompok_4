@@ -168,6 +168,11 @@ const errorTypes = {
       status: 500,
       code: 'DB_ERROR',
     },
+    BAD_REQUEST: {
+      statusCode: 400,
+      error: 'BAD_REQUEST',
+      description: 'Invalid Request',
+    }
   };
   
   const errorResponder = (errorType, message = '') => {

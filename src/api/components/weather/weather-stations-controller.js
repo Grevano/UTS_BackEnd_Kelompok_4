@@ -105,7 +105,6 @@ const getMaxTemperature = async (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ message: "No data found in the provided date range." });
     }
-
     res.status(200).json(result[0]);
   } catch (error) {
     console.error(error.message);

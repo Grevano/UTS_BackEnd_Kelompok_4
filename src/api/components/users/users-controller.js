@@ -1,6 +1,7 @@
 const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const { hashPassword } = require('../../../utils/password');
+const { isValidObjectId } = require('mongoose');
 
 async function getAdminUsers(request, response, next) {
   try {
@@ -120,18 +121,26 @@ async function createUser(request, response, next) {
 //for testing purposes
 async function deleteUser(request, response, next) {
   try {
-    const success = await usersService.deleteUser(request.params.id);
+    const userId = request.params.id;
+    if (!isValidObjectId(userId)) {
+      throw errorResponder(
+        errorTypes.BAD_REQUEST,
+        'Invalid userID was provided'
+      );
+    }
+  
+    const success = await usersService.deleteUser(userId);
     if (!success) {
       throw errorResponder(
-        errorTypes.UNPROCESSABLE_ENTITY,
-
-        'Failed to delete user'
+        errorTypes.NOT_FOUND,
+        'No user was found with the provided user ID'
       );
     }
     return response.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     return next(error);
   }
+  
 }
 
 //for testing purposes
@@ -147,26 +156,22 @@ async function getUsers(request, response, next) {
   }
 }
 
-//function to update the role of the user and make sure that the role is not empty or invalid
-// and the user exists, but make sure that only the admin can update the role of the user
-//the body section must fill like this {"startDate": "2025-04-18T06:26:09.568+00:00", "endDate": "2025-04-18T06:26:09.568+00:00", "role": "admin"}
-//without parameters required at all
-//and the role can only be either admin, teacher, or student
-
 async function updateRolesByDateRange(request, response, next) {
   try {
     const { startDate, endDate, role } = request.body;
-
+    
     if (!startDate || !endDate || !role) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Missing required fields: startDate, endDate, or role');
+      throw errorResponder(errorTypes.BAD_REQUEST, 'A required field was not provided');
     }
 
     if (!allowedRoles.includes(role)) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Invalid or empty role');
+      throw errorResponder(errorTypes.BAD_REQUEST, 'Invalid or empty role');
     }
 
     const updatedCount = await usersService.updateRolesByDateRange(startDate, endDate, role);
-
+    if (updatedCount === 0) {
+      throw errorResponder(errorTypes.NOT_FOUND, 'No accounts in the provided date range');
+    }
     return response.status(200).json({ message: `${updatedCount} account(s) updated to ${role} role successfully.` });
   } catch (error) {
     return next(error);

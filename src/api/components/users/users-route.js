@@ -19,7 +19,7 @@ module.exports = (app) => {
 
   //for testing purposes
   // Delete user
-  route.delete('/delete/:id', usersController.deleteUser);
+  route.delete('/delete/:id', authenticateToken, isAdmin, usersController.deleteUser);
   
   // Get list of users
   route.get('/', authenticateToken, isAdmin, usersController.getUsers);
