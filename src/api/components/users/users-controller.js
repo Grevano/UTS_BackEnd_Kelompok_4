@@ -169,7 +169,6 @@ async function updateRole(request, response, next) {
   }
 }
 
-
 //for testing purposes
 async function getUser(request, response, next) {
   try {
