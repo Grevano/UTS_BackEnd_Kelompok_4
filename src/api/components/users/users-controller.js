@@ -6,6 +6,13 @@ async function getAdminUsers(request, response, next) {
   try {
     const offset = request.query.offset || 0;
     const limit = request.query.limit || 20;
+    
+    if (limit && !Number.isInteger(parseInt(limit))) {
+      throw errorResponder(errorTypes.VALIDATION, 'Limit must be an integer'); 
+    }
+    if (offset && !Number.isInteger(parseInt(offset))) {
+      throw errorResponder(errorTypes.VALIDATION, 'Offset must be an integer'); 
+    }
     const users = await usersService.getAdminUsers(offset, limit);
 
     return response.status(200).json(users);
@@ -24,6 +31,10 @@ async function createUser(request, response, next) {
       confirm_password: confirmPassword,
       role: role,
     } = request.body;
+
+    if(usersService.emailExists(email)){
+      throw errorResponder(errorTypes.EMAIL_ALREADY_TAKEN, 'Email already exists');
+    }
 
     let lastSession = (request.body.lastSession && !isNaN(new Date(request.body.lastSession)))
       ? new Date(request.body.lastSession)

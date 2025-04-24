@@ -7,7 +7,7 @@ async function login(request, response, next) {
     if (!email || !password) {
       throw errorResponder(
         errorTypes.VALIDATION,
-        'Please provide a username, a password'
+        'Please provide an email and a password'
       );
     }
     const user = await authservice.login(email, password);
