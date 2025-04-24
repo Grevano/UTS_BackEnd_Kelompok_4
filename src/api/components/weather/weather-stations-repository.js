@@ -88,9 +88,9 @@ module.exports = {
   getReadingsByDateFromDB,
   getReadingIdsInRange,
   deleteReadingsByIds,
-  getStations,
-  deleteStation,
   updatePrecipitationById,
   findMaxTemperatureInRange,
+  getStations,
+  deleteStation,
 };
 

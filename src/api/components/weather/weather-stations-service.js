@@ -94,8 +94,8 @@ module.exports = {
   getMaxPrecipitation,
   getReadingsByDateService,
   deleteSensorReadingsInRange,
-  getStations,
-  deleteStation,
   patchPrecipitation,
   getMaxTemperatureInRange,
+  getStations,
+  deleteStation,
 };

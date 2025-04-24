@@ -20,20 +20,6 @@ async function updateUserSession(id) {
 async function updateRole(id, role) {
   return Users.updateOne({ _id: id }, { $set: { role } });
 }
-//for testing purposes
-async function deleteUser(id) {
-  return Users.deleteOne({ _id: id });
-}
-
-//for testing purposes
-async function getUsers(offset, limit) {
-  return Users.find().skip(offset).limit(limit);
-}
-
-//for testing purposes
-async function getUser(id) {
-  return Users.findById(id);
-}
 
 async function deleteStudentsByLastSession(startDate, endDate) {
   const start = new Date(startDate);
@@ -50,6 +36,21 @@ async function deleteStudentsByLastSession(startDate, endDate) {
   return result.deletedCount;
 }
 
+//for testing purposes
+async function deleteUser(id) {
+  return Users.deleteOne({ _id: id });
+}
+
+//for testing purposes
+async function getUsers(offset, limit) {
+  return Users.find().skip(offset).limit(limit);
+}
+
+//for testing purposes
+async function getUser(id) {
+  return Users.findById(id);
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -59,4 +60,5 @@ module.exports = {
   updateUserSession,
   deleteUser,
   deleteStudentsByLastSession,
+  updateRole
 };

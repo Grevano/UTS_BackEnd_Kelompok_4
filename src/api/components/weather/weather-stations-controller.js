@@ -180,16 +180,15 @@ async function deleteStation(request, response, next) {
   }
 }
 
-//Mau dibikin module.export aja?
 module.exports = {
   addWeatherStation,
   addSensorReadingsForStation,
   getMaxPrecipitation,
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
-  getStations,
-  deleteStation,
   patchPrecipitation,
   getMaxTemperature,
+  getStations,
+  deleteStation,
 };
 
