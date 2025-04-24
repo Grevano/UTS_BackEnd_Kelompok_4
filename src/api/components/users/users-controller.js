@@ -167,6 +167,7 @@ async function updateRolesByDateRange(request, response, next) {
     if (!allowedRoles.includes(role)) {
       throw errorResponder(errorTypes.BAD_REQUEST, 'Invalid or empty role');
     }
+    
     const updatedCount = await usersService.updateRolesByDateRange(startDate, endDate, role);
     if (updatedCount === 0) {
       throw errorResponder(errorTypes.NOT_FOUND, 'No accounts in the provided date range');
@@ -176,8 +177,6 @@ async function updateRolesByDateRange(request, response, next) {
     return next(error);
   }
 }
-
-
 
 //for testing purposes
 async function getUser(request, response, next) {
