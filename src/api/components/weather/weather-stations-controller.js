@@ -1,9 +1,10 @@
 const weatherStationService = require('./weather-stations-service.js');
+const { errorTypes, errorResponder } = require('../../../core/errors');
 /**Note: Ingat! tambahkan weatherStationService.
  * di depan fungsi yang dipanggil dari weather-station-service.js
  */
 
-const addWeatherStation = async (req, res) => {
+const addWeatherStation = async (req, res, next) => {
   if (req.user.role !== "student") {
     try {
       const message = await weatherStationService.createWeatherStation(req.body);
@@ -16,28 +17,28 @@ const addWeatherStation = async (req, res) => {
         return res.status(400).json({ error: errors.join(', ') });
       }
       console.log(error.message);
-      res.status(500).json({ message: error.message });
+      return next(errorResponder(errorTypes.SERVER, error.message));
     }
   } else {
-    return res.status(401).json({ message: "You are not authorised to access this content" });
+    return next(errorResponder(errorTypes.FORBIDDEN, "You are not authorised to access this content"));
   }
 };
 
-const addSensorReadingsForStation = async (req, res) => {
+const addSensorReadingsForStation = async (req, res, next) => {
   if (req.user.role !== "student") {
     try {
       const message = await weatherStationService.insertSensorReadings(req.params.deviceName, req.body);
       res.status(200).json({ message });
     } catch (error) {
       console.log(error.message);
-      res.status(500).json({ message: error.message });
+      return next(errorResponder(errorTypes.SERVER, error.message));
     }
   } else {
-    return res.status(401).json({ message: "You are not authorised to access this content" });
+    return next(errorResponder(errorTypes.FORBIDDEN, "You are not authorised to access this content"));
   }
 };
 
-const getMaxPrecipitation = async (req, res) => {
+const getMaxPrecipitation = async (req, res, next) => {
   try {
     const deviceName = req.params.deviceName;
     const result = await weatherStationService.getMaxPrecipitation(deviceName);
@@ -46,14 +47,14 @@ const getMaxPrecipitation = async (req, res) => {
     console.error(error.message);
     // Cek apakah ada data weather-station bersangkutan
     if (error.message.includes('No data found')) {
-      res.status(404).json({ message: error.message });
+      return next(errorResponder(errorTypes.NOT_FOUND, error.message));
     } else {
-      res.status(500).json({ message: error.message });
+      return next(errorResponder(errorTypes.SERVER, error.message));
     }
   }
 };
 
-const getSensorReadingsByDate = async (req, res) => {
+const getSensorReadingsByDate = async (req, res, next) => {
   try {
     const { deviceName, date } = req.params;
     const result = await weatherStationService.getReadingsByDateService(deviceName, date);
@@ -63,18 +64,22 @@ const getSensorReadingsByDate = async (req, res) => {
     console.error(error.message);
     // Cek apakah ada data weather-station bersangkutan
     if (error.message.includes('No data found')) {
-      res.status(404).json({ message: error.message });
+      return next(errorResponder(errorTypes.NOT_FOUND, error.message));
     } else {
-      res.status(500).json({ message: error.message });
+      return next(errorResponder(errorTypes.SERVER, error.message));
     }
   }
 };
 
-const deleteSensorReadingsInRange = async (req, res) => {
+const deleteSensorReadingsInRange = async (req, res, next) => {
   if (req.user.role !== "student") {
     try {
       const deviceName = req.params.deviceName;
       const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return next(errorResponder(errorTypes.BAD_REQUEST, "startDate and endDate are required query parameters."));
+      }
 
       const { deletedCount, notFound } = await weatherStationService.deleteSensorReadingsInRange(
         deviceName,
@@ -83,33 +88,34 @@ const deleteSensorReadingsInRange = async (req, res) => {
       );
 
       if (notFound) {
-        return res.status(404).json({ message: "No data found in the provided date range" });
+        return next(errorResponder(errorTypes.NOT_FOUND, "No data found in the provided date range"));
       }
 
       return res.status(200).json({ message: `${deletedCount} ${deviceName} readings deleted` });
     } catch (error) {
       console.log(error.message);
-      return res.status(500).json({ message: error.message });
+      return next(errorResponder(errorTypes.SERVER, error.message));
     }
   } else {
-    return res.status(401).json({ message: "You are not authorised to access this content" });
+    return next(errorResponder(errorTypes.FORBIDDEN, "You are not authorised to access this content"));
   }
 };
+
 // ✅ PATCH /weather-stations/:entryID/precipitation
-const patchPrecipitation = async (req, res) => {
+const patchPrecipitation = async (req, res, next) => {
   if (req.user.role !== "student") {
     try {
       const { entryID } = req.params;
       const { precipitation } = req.body;
 
       if (!precipitation || isNaN(precipitation)) {
-        return res.status(400).json({ message: 'Valid precipitation value is required.' });
+        return next(errorResponder(errorTypes.VALIDATION, 'Valid precipitation value is required.'));
       }
 
       const updated = await weatherStationService.patchPrecipitation(entryID, precipitation);
 
       if (!updated) {
-        return res.status(404).json({ message: 'Entry not found or update failed.' });
+        return next(errorResponder(errorTypes.NOT_FOUND, 'Entry not found or update failed.'));
       }
 
       res.status(200).json({
@@ -117,34 +123,34 @@ const patchPrecipitation = async (req, res) => {
       });
     } catch (error) {
       console.error('Error updating precipitation:', error);
-      res.status(500).json({ message: 'Internal server error.' });
+      return next(errorResponder(errorTypes.SERVER, 'Internal server error.'));
     }
   } else {
-    return res.status(401).json({ message: "You are not authorised to access this content" });
+    return next(errorResponder(errorTypes.FORBIDDEN, "You are not authorised to access this content"));
   }
 };
 
 // ✅ GET /weather-stations/max-temperature
 // Get max temperature in data range for all data
 // Example response: { "deviceName": "Station-XYZ", "maxTemperature": 50.64 }
-const getMaxTemperature = async (req, res) => {
+const getMaxTemperature = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
 
     if (!startDate || !endDate) {
-      return res.status(400).json({ message: "startDate and endDate are required query parameters." });
+      return next(errorResponder(errorTypes.BAD_REQUEST, "startDate and endDate are required query parameters."));
     }
 
     const result = await weatherStationService.getMaxTemperatureInRange(startDate, endDate);
 
     if (result.length === 0) {
-      return res.status(404).json({ message: "No data found in the provided date range." });
+      return next(errorResponder(errorTypes.NOT_FOUND, "No data found in the provided date range."));
     }
 
     res.status(200).json(result[0]);
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: error.message });
+    return next(errorResponder(errorTypes.SERVER, error.message));
   }
 };
 
@@ -191,4 +197,3 @@ module.exports = {
   getStations,
   deleteStation,
 };
-
