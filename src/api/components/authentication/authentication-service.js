@@ -36,7 +36,6 @@ async function login(email, password) {
     user: payload, 
   };
 }
-
 module.exports = {
   login,
 };

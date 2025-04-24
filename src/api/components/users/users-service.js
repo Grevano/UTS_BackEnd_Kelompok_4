@@ -13,20 +13,29 @@ async function createUser(email, password, fullName, role, lastSession) {
   return usersRepository.createUser(email, password, fullName, role, lastSession);
 }
 
+async function updateRole(id, role) {
+  const user = await usersRepository.getUser(id);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return usersRepository.updateRole(id, role);
+}
 
-//For testing purposes
 async function deleteUser(id) {
   return usersRepository.deleteUser(id);
 }
 
-//for testing purposes
 async function getUser(id) {
   return usersRepository.getUser(id);
 }
 
-//for testing purposes
 async function getUsers(offset, limit) {
   return usersRepository.getUsers(offset, limit);
+}
+
+
+async function deleteStudentsByLastSession(startDate, endDate) {
+  return usersRepository.deleteStudentsByLastSession(startDate, endDate);
 }
 
 module.exports = {
@@ -36,4 +45,5 @@ module.exports = {
   emailExists,
   createUser,
   deleteUser,
+  deleteStudentsByLastSession,
 };

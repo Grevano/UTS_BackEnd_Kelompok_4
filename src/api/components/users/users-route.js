@@ -8,15 +8,22 @@ const route = express.Router();
 module.exports = (app) => {
   app.use('/users', route);
 
+  //Get All admin users
+  route.get('/admin', authenticateToken, isAdmin, usersController.getAdminUsers)
+  
+  // Create a new user
+  route.post('/',  authenticateToken, isAdmin, usersController.createUser); 
+  
+  //Update user role
+  route.put('/:id/role', authenticateToken, isAdmin, usersController.updateRole);
+  
+  //for testing purposes
+  // Delete user
+  route.delete('/delete/:id', usersController.deleteUser);
+  
   // Get list of users
   route.get('/', authenticateToken, isAdmin, usersController.getUsers);
 
-  //Get All admin users
-  route.get('/admin', authenticateToken, isAdmin, usersController.getAdminUsers)
-
-  // Create a new user
-  route.post('/',  authenticateToken, isAdmin, usersController.createUser); 
-
-  // Delete user, for testing purposes
-  route.delete('/delete/:id', usersController.deleteUser);
+  route.delete('/delete-students',authenticateToken, isAdmin, usersController.deleteStudentsByLastSession);
 };
+

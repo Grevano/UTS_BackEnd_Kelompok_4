@@ -40,13 +40,16 @@ const addSensorReadingsForStation = async (req, res) => {
 const getMaxPrecipitation = async (req, res) => {
   try {
     const deviceName = req.params.deviceName;
-
     const result = await weatherStationService.getMaxPrecipitation(deviceName);
-
     res.status(200).json(result);
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: error.message });
+    // Cek apakah ada data weather-station bersangkutan
+    if (error.message.includes('No data found')) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
@@ -57,8 +60,13 @@ const getSensorReadingsByDate = async (req, res) => {
 
     res.status(200).json(result);
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
+    console.error(error.message);
+    // Cek apakah ada data weather-station bersangkutan
+    if (error.message.includes('No data found')) {
+      res.status(404).json({ message: error.message });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
@@ -87,6 +95,59 @@ const deleteSensorReadingsInRange = async (req, res) => {
     return res.status(401).json({ message: "You are not authorised to access this content" });
   }
 };
+// ✅ PATCH /weather-stations/:entryID/precipitation
+const patchPrecipitation = async (req, res) => {
+  if (req.user.role !== "student") {
+    try {
+      const { entryID } = req.params;
+      const { precipitation } = req.body;
+
+      if (!precipitation || isNaN(precipitation)) {
+        return res.status(400).json({ message: 'Valid precipitation value is required.' });
+      }
+
+      const updated = await weatherStationService.patchPrecipitation(entryID, precipitation);
+
+      if (!updated) {
+        return res.status(404).json({ message: 'Entry not found or update failed.' });
+      }
+
+      res.status(200).json({
+        message: `Precipitation of the ${updated.sensorName} entry was successfully updated to ${updated.precipitation}`,
+      });
+    } catch (error) {
+      console.error('Error updating precipitation:', error);
+      res.status(500).json({ message: 'Internal server error.' });
+    }
+  } else {
+    return res.status(401).json({ message: "You are not authorised to access this content" });
+  }
+};
+
+// ✅ GET /weather-stations/max-temperature
+// Get max temperature in data range for all data
+// Example response: { "deviceName": "Station-XYZ", "maxTemperature": 50.64 }
+const getMaxTemperature = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "startDate and endDate are required query parameters." });
+    }
+
+    const result = await weatherStationService.getMaxTemperatureInRange(startDate, endDate);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No data found in the provided date range." });
+    }
+
+    res.status(200).json(result[0]);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 //for testing purposes
 async function getStations(request, response, next) {
@@ -99,7 +160,7 @@ async function getStations(request, response, next) {
   } catch (error) {
     return next(error);
   }
-}
+};
 
 //for testing purposes
 async function deleteStation(request, response, next) {
@@ -127,5 +188,8 @@ module.exports = {
   getSensorReadingsByDate,
   deleteSensorReadingsInRange,
   getStations,
-  deleteStation
-}
+  deleteStation,
+  patchPrecipitation,
+  getMaxTemperature,
+};
+
