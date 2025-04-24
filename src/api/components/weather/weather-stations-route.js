@@ -31,5 +31,11 @@ module.exports = (app) => {
   router.patch("/:entryID/precipitation", authenticateToken, weatherStationsController.patchPrecipitation);
 
   //for testing purposes, get all weatherStations
+  router.get("/",authenticateToken, weatherStationsController.getStations)
+
+  //for testing purposes, delete station by id
+  router.delete("/delete/:id",authenticateToken, isAdmin, weatherStationsController.deleteStation)
+  
   router.get("/",authenticateToken, weatherStationsController.getStations);
 };
+

@@ -6,6 +6,13 @@ async function getAdminUsers(request, response, next) {
   try {
     const offset = request.query.offset || 0;
     const limit = request.query.limit || 20;
+    
+    if (limit && !Number.isInteger(parseInt(limit))) {
+      throw errorResponder(errorTypes.VALIDATION, 'Limit must be an integer'); 
+    }
+    if (offset && !Number.isInteger(parseInt(offset))) {
+      throw errorResponder(errorTypes.VALIDATION, 'Offset must be an integer'); 
+    }
     const users = await usersService.getAdminUsers(offset, limit);
 
     return response.status(200).json(users);
@@ -25,15 +32,22 @@ async function createUser(request, response, next) {
       role: role,
     } = request.body;
 
+    if(usersService.emailExists(email)){
+      throw errorResponder(errorTypes.EMAIL_ALREADY_TAKEN, 'Email already exists');
+    }
+
     let lastSession = (request.body.lastSession && !isNaN(new Date(request.body.lastSession)))
       ? new Date(request.body.lastSession)
       : new Date();
     
-
-    // Email is required and cannot be empty
-    if (!email) {
-      throw errorResponder(errorTypes.VALIDATION_ERROR, 'Email is required');
+    //if request body is empty
+    if (!email && !fullName && !password && !confirmPassword && !role) {
+      throw errorResponder(errorTypes.EMPTY_BODY, 'Request Body empty, please fill with Email, Full Name, Password, ConfirmPassword, and Role (or LastSession)');
     }
+
+    // request body must be complete
+    if (!email || !fullName || !password || !confirmPassword || !role) {
+      throw errorResponder(errorTypes.VALIDATION, 'Email, Full Name, Password, ConfirmPassword, and Role are required');
     
     //if request body is empty
     if (!email && !fullName && !password && !confirmPassword && !role) {
@@ -46,6 +60,7 @@ async function createUser(request, response, next) {
         errorTypes.VALIDATION_ERROR,
         'Invalid or Empty role'
       );
+
     }
 
     // Email must be unique
@@ -57,14 +72,6 @@ async function createUser(request, response, next) {
     }
     if (!password) {
       throw errorResponder(errorTypes.VALIDATION_ERROR, 
-        'Password is required'
-      );
-    }
-
-    // The password is at least 8 characters long
-    if (!password) {
-      throw errorResponder(
-        errorTypes.VALIDATION_ERROR,
         'Password is required'
       );
     }
@@ -85,6 +92,14 @@ async function createUser(request, response, next) {
       );
     }
 //Role can onlly be either admin, teacher, or student
+    if (!allowedRoles.includes(role)){
+      throw errorResponder(
+        errorTypes.VALIDATION,
+        'Invalid Role'
+      );
+    }
+
+    // Role can only be either admin, teacher, or student
     if (!allowedRoles.includes(role)){
       throw errorResponder(
         errorTypes.VALIDATION,
@@ -115,7 +130,6 @@ async function createUser(request, response, next) {
     return next(error);
   }
 }
-
 
 //for testing purposes
 async function deleteUser(request, response, next) {

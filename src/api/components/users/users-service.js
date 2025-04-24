@@ -21,7 +21,6 @@ async function updateRole(id, role) {
   return usersRepository.updateRole(id, role);
 }
 
-//for testing purposes
 async function deleteUser(id) {
   return usersRepository.deleteUser(id);
 }
@@ -33,6 +32,7 @@ async function getUser(id) {
 async function getUsers(offset, limit) {
   return usersRepository.getUsers(offset, limit);
 }
+
 
 async function deleteStudentsByLastSession(startDate, endDate) {
   return usersRepository.deleteStudentsByLastSession(startDate, endDate);
